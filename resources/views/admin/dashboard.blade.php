@@ -1,95 +1,60 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard')
+@section('title', 'Dashboard Admin')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <header class="mb-6">
+        <h1 class="text-3xl font-bold">Dashboard Admin</h1>
+        <p class="text-gray-600">
+            Selamat datang, kelola sistem gaji karyawan dengan mudah. 
+            Tanggal: {{ date('d F Y, H:i') }}
+        </p>
+    </header>
 
-  <!-- Total Karyawan -->
-  <div class="bg-gradient-to-r from-gray-700 to-gray-500 text-white p-6 rounded-lg shadow-md col-span-1">
-    <h3 class="text-lg">Total Karyawan</h3>
-    <p class="text-4xl font-bold mt-2">1.482</p>
-    <div class="mt-4 flex gap-2">
-      <button class="px-3 py-1 bg-gray-600 rounded">Edit</button>
-      <button class="px-3 py-1 bg-blue-600 rounded">+ Tambah</button>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card: Total Karyawan -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700">Total Karyawan</h3>
+            <p class="text-3xl font-bold text-blue-600 mt-2">150</p>
+        </div>
+
+        <!-- Card: Total Absensi -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700">Total Absensi Hari Ini</h3>
+            <p class="text-3xl font-bold text-green-600 mt-2">120</p>
+        </div>
+
+        <!-- Card: Total Pengajuan Cuti -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700">Pengajuan Cuti</h3>
+            <p class="text-3xl font-bold text-yellow-600 mt-2">10</p>
+        </div>
     </div>
-  </div>
 
-  <!-- Absensi -->
-  <div class="bg-white p-6 rounded-lg shadow-md col-span-1">
-    <h3 class="text-lg font-semibold">Absensi</h3>
-    <canvas id="absensiChart"></canvas>
-  </div>
-
-  <!-- Notifikasi -->
-  <div class="bg-white p-6 rounded-lg shadow-md col-span-1 row-span-2">
-    <h3 class="text-lg font-semibold mb-4">Notifikasi</h3>
-    <ul class="space-y-3 text-sm max-h-[400px] overflow-y-auto">
-      <li class="flex items-start gap-2">
-        <span class="text-red-500">❌</span> <div><strong>Absen</strong> - 5 Karyawan belum clock-in</div>
-      </li>
-      <li class="flex items-start gap-2">
-        <span class="text-yellow-500">⚠</span> <div><strong>Penggajian</strong> September belum diproses</div>
-      </li>
-      <li class="flex items-start gap-2">
-        <span class="text-green-500">✅</span> <div><strong>Karyawan</strong> baru ditambahkan</div>
-      </li>
-    </ul>
-    <button class="mt-4 w-full bg-gray-800 text-white py-2 rounded">Lihat Semua</button>
-  </div>
-
-  <!-- Jam + Donut -->
-  <div class="bg-white p-6 rounded-lg shadow-md col-span-1">
-    <div class="text-3xl font-bold">9:14</div>
-    <p class="text-gray-500">Wed, September 10</p>
-    <canvas id="absenDonut" class="mt-4"></canvas>
-  </div>
-
-  <!-- Grafik Cuti -->
-  <div class="bg-white p-6 rounded-lg shadow-md col-span-1">
-    <h3 class="text-lg font-semibold">Cuti</h3>
-    <canvas id="cutiChart"></canvas>
-  </div>
-
-</div>
-@endsection
-
-@section('scripts')
-<script>
-  // Absensi Chart
-  new Chart(document.getElementById('absensiChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Senin','Selasa','Rabu','Kamis','Jumat'],
-      datasets: [{
-        data: [1400,1380,1390,1400,1200],
-        backgroundColor: '#facc15'
-      }]
-    }
-  });
-
-  // Cuti Chart
-  new Chart(document.getElementById('cutiChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Senin','Selasa','Rabu','Kamis','Jumat'],
-      datasets: [
-        { label: 'Cuti', data: [50,60,80,55,30], backgroundColor: '#374151' },
-        { label: 'Pengajuan', data: [20,25,30,20,15], backgroundColor: '#9ca3af' }
-      ]
-    }
-  });
-
-  // Donut Chart
-  new Chart(document.getElementById('absenDonut'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Sudah Absen','Belum Absen'],
-      datasets: [{
-        data: [1200,282],
-        backgroundColor: ['#10b981','#d1d5db']
-      }]
-    }
-  });
-</script>
+    <div class="mt-6 bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Aktivitas Terbaru</h3>
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2">Karyawan</th>
+                    <th class="p-2">Aksi</th>
+                    <th class="p-2">Waktu</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="p-2">John Doe</td>
+                    <td class="p-2">Clock In</td>
+                    <td class="p-2">{{ date('H:i, d M Y') }}</td>
+                </tr>
+                <tr>
+                    <td class="p-2">Jane Smith</td>
+                    <td class="p-2">Pengajuan Cuti</td>
+                    <td class="p-2">{{ date('H:i, d M Y', strtotime('-1 day')) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        
+    </div>
 @endsection

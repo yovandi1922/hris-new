@@ -1,91 +1,101 @@
 @extends('layouts.karyawan')
 
-@section('title', 'Absen Kehadiran')
+@section('title', 'Absensi')
 
 @section('content')
-<div class="bg-white shadow rounded-lg p-6 max-w-md mx-auto text-center">
-    <h1 class="text-2xl font-bold mb-4">Absen Kehadiran</h1>
-    <p class="text-gray-600 mb-4">
-        @if (!$absenHariIni)
-            Klik tombol di bawah untuk absen masuk.
-        @elseif($absenHariIni && !$absenHariIni->jam_keluar)
-            Anda sudah absen masuk, klik tombol untuk absen keluar.
-        @else
-            Anda sudah absen masuk & keluar hari ini.
-        @endif
-    </p>
+<div class="bg-gray-100 min-h-screen p-6">
 
-    @if (!$absenHariIni || ($absenHariIni && !$absenHariIni->jam_keluar))
-        <form action="{{ route('karyawan.absen.store') }}" method="POST" id="absensiForm">
-            @csrf
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
+    {{-- Shift info --}}
+    <div class="flex items-center justify-between mb-6">
+        <div class="bg-white shadow rounded-lg p-4 flex-1 mr-6">
+            <div class="flex justify-between">
+                <div>
+                    <p class="text-gray-500">Mulai Shift</p>
+                    <p class="font-bold text-lg">8:00 AM</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Akhiri Shift</p>
+                    <p class="font-bold text-lg">4:00 PM</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">Sisa waktu shift 3 hours 34 minutes</p>
+        </div>
 
-            <button 
-                type="button"
-                id="btnAbsen"
-                class="
-                    @if (!$absenHariIni)
-                        bg-blue-600 hover:bg-blue-700
-                    @else
-                        bg-red-600 hover:bg-red-700
-                    @endif
-                    text-white font-semibold px-6 py-3 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed
-                ">
-                @if (!$absenHariIni)
-                    Absen Masuk
-                @else
-                    Absen Keluar
-                @endif
-            </button>
-        </form>
-    @else
-        <p class="text-green-600 font-semibold">✅ Anda sudah menyelesaikan absensi hari ini.</p>
-    @endif
+        {{-- Tombol Clock-in/out --}}
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-full w-40 h-40 flex items-center justify-center text-xl font-bold shadow">
+            @if(!$absenHariIni)
+                {{-- Belum absen hari ini → tombol Clock In --}}
+                <form action="{{ route('absen.clockin') }}" method="POST" class="w-full h-full flex items-center justify-center">
+                    @csrf
+                    <button type="submit" class="w-full h-full rounded-full text-xl font-bold focus:outline-none">
+                        Clock-in
+                    </button>
+                </form>
+            @elseif($absenHariIni && !$absenHariIni->jam_keluar)
+                {{-- Sudah absen masuk tapi belum keluar → tombol Clock Out --}}
+                <form action="{{ route('absen.clockout') }}" method="POST" class="w-full h-full flex items-center justify-center">
+                    @csrf
+                    <button type="submit" class="w-full h-full rounded-full text-xl font-bold focus:outline-none">
+                        Clock-out
+                    </button>
+                </form>
+            @else
+                {{-- Sudah absen masuk & keluar --}}
+                Selesai
+            @endif
+        </div>
+    </div>
 
-    <p id="status" class="text-sm text-gray-500 mt-3"></p>
+    {{-- Aktivitas Terakhir + Map --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Aktivitas terakhir --}}
+        <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">Aktivitas Terakhir</h2>
+                <a href="#" class="text-blue-600 text-sm">Lihat semua</a>
+            </div>
+            <ul class="space-y-3">
+                <li class="flex justify-between items-center border p-2 rounded-lg">
+                    <div>
+                        <p class="font-medium">Clock-in</p>
+                        <p class="text-sm text-gray-500">Wednesday, 10 September</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold">7:47 AM</p>
+                        <p class="text-green-600 text-xs">On time</p>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center border p-2 rounded-lg">
+                    <div>
+                        <p class="font-medium">Clock-out</p>
+                        <p class="text-sm text-gray-500">Tuesday, 9 September</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold">4:01 PM</p>
+                        <p class="text-green-600 text-xs">On time</p>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center border p-2 rounded-lg">
+                    <div>
+                        <p class="font-medium">Clock-in</p>
+                        <p class="text-sm text-gray-500">Tuesday, 9 September</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold">8:30 AM</p>
+                        <p class="text-red-500 text-xs">Late</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        {{-- Map --}}
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18..."
+                width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
+    </div>
+
 </div>
-
-<script>
-document.getElementById('btnAbsen')?.addEventListener('click', function () {
-    if (navigator.geolocation) {
-        document.getElementById('status').innerText = "Mendeteksi lokasi...";
-        navigator.geolocation.getCurrentPosition(function (position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-
-            const kantorLat = -7.566381;
-            const kantorLng = 110.798996;
-            const radius = 10000; 
-
-            const jarak = getDistanceFromLatLonInM(lat, lng, kantorLat, kantorLng);
-
-            if (jarak <= radius) {
-                document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lng;
-                document.getElementById('absensiForm').submit();
-            } else {
-                document.getElementById('status').innerText = 
-                    "Kamu berada di luar radius kantor ("+ Math.round(jarak) +" m)";
-            }
-        }, function () {
-            document.getElementById('status').innerText = "Gagal mendeteksi lokasi. Aktifkan GPS.";
-        });
-    } else {
-        document.getElementById('status').innerText = "Browser tidak mendukung geolocation.";
-    }
-});
-
-function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
-    const dLat = (lat2-lat1) * Math.PI/180;
-    const dLon = (lon2-lon1) * Math.PI/180;
-    const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-}
-</script>
 @endsection

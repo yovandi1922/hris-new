@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KaryawanController;
-use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PengajuanController;
 
 // Root -> redirect sesuai login
@@ -42,14 +41,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Fitur admin lainnya
     Route::get('/admin/approval-workflow', [AdminController::class, 'approvalWorkflow'])->name('admin.approval-workflow');
-    Route::get('/admin/payroll', [App\Http\Controllers\AdminController::class, 'payroll'])->name('admin.payroll');
-    Route::get('/admin/bonus', [App\Http\Controllers\AdminController::class, 'bonus'])->name('admin.bonus');
-
+    Route::get('/admin/payroll', [AdminController::class, 'payroll'])->name('admin.payroll');
+    Route::get('/admin/bonus', [AdminController::class, 'bonus'])->name('admin.bonus');
 
     // Generate Absen
     Route::get('/admin/absen', [AdminController::class, 'absensi'])->name('admin.absen');
 });
-
 
 // ================== KARYAWAN ==================
 Route::middleware(['auth', 'role:karyawan'])->group(function () {
@@ -57,8 +54,17 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan/absen', [KaryawanController::class, 'showAbsen'])->name('karyawan.absen');
     Route::post('/karyawan/absen', [KaryawanController::class, 'storeAbsen'])->name('karyawan.absen.store');
 
-    // Pengajuan
-Route::get('/karyawan/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('karyawan.pengajuan');
-Route::post('/karyawan/pengajuan', [PengajuanController::class, 'store'])->name('karyawan.pengajuan.store');
-});
+    // Absen
+    Route::post('/absen/clockin', [KaryawanController::class, 'clockIn'])->name('absen.clockin');
+    Route::post('/absen/clockout', [KaryawanController::class, 'clockOut'])->name('absen.clockout');
 
+    // ✅ Tambahan baru — Cek status Clock In (JSON)
+    Route::get('/absen/status', [KaryawanController::class, 'checkClockInStatus'])->name('absen.status');
+
+    // Pengajuan
+    Route::get('/karyawan/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('karyawan.pengajuan');
+    Route::post('/karyawan/pengajuan', [PengajuanController::class, 'store'])->name('karyawan.pengajuan.store');
+
+    // ================== DATA KARYAWAN ==================
+    Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
+});
