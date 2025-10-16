@@ -99,31 +99,63 @@ class AdminController extends Controller
         return redirect()->route('admin.karyawan')->with('success', 'Karyawan berhasil dihapus');
     }
 
-    // ✅ Tambahan: Manajemen Payroll
+    // ✅ Manajemen Gaji (Payroll)
     public function payroll()
     {
         $salaryComponents = [
             'income' => [
-                ['id' => 1, 'name' => 'Gaji Pokok', 'amount' => 5000000],
-                ['id' => 2, 'name' => 'Tunjangan Transportasi', 'amount' => 750000],
+                ['id' => 1, 'employee_id' => 101, 'employee_name' => 'Budi Santoso', 'name' => 'Gaji Pokok', 'amount' => 5000000],
+                ['id' => 2, 'employee_id' => 102, 'employee_name' => 'Siti Aminah', 'name' => 'Tunjangan Transportasi', 'amount' => 750000],
             ],
             'deductions' => [
-                ['id' => 1, 'name' => 'BPJS', 'amount' => 250000],
-                ['id' => 2, 'name' => 'PPh 21', 'amount' => 300000],
+                ['id' => 1, 'employee_id' => 101, 'employee_name' => 'Budi Santoso', 'name' => 'BPJS', 'amount' => 250000],
+                ['id' => 2, 'employee_id' => 102, 'employee_name' => 'Siti Aminah', 'name' => 'PPh 21', 'amount' => 300000],
             ],
         ];
 
         return view('admin.payroll', compact('salaryComponents'));
     }
 
-    // ✅ Tambahan: Manajemen Bonus
+    // ✅ Manajemen Bonus
     public function bonus()
     {
         $bonuses = [
-            ['id' => 1, 'employee' => 'Budi Santoso', 'amount' => 1000000, 'reason' => 'Kinerja Luar Biasa'],
-            ['id' => 2, 'employee' => 'Siti Aminah', 'amount' => 750000, 'reason' => 'Target Tercapai'],
+            ['id' => 1, 'employee_id' => 101, 'employee' => 'Budi Santoso', 'amount' => 1000000, 'reason' => 'Kinerja Luar Biasa'],
+            ['id' => 2, 'employee_id' => 102, 'employee' => 'Siti Aminah', 'amount' => 750000, 'reason' => 'Target Tercapai'],
         ];
 
         return view('admin.bonus', compact('bonuses'));
+    }
+
+    // ✅ Approval Workflow
+    public function approvalWorkflow()
+    {
+        $loggedUser = Auth::user();
+
+        $approvals = [
+            [
+                'id' => 1,
+                'karyawan' => 'Budi Santoso',
+                'jenis' => 'Cuti Sakit',
+                'tanggal' => '2025-09-10',
+                'status' => 'Pending'
+            ],
+            [
+                'id' => 2,
+                'karyawan' => 'Siti Aminah',
+                'jenis' => 'Cuti Tahunan',
+                'tanggal' => '2025-09-12',
+                'status' => 'Disetujui'
+            ],
+            [
+                'id' => 3,
+                'karyawan' => 'Andi Pratama',
+                'jenis' => 'Cuti Penting',
+                'tanggal' => '2025-09-14',
+                'status' => 'Ditolak'
+            ]
+        ];
+
+        return view('admin.approval-workflow', compact('loggedUser', 'approvals'));
     }
 }
