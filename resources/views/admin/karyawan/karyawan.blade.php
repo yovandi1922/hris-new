@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <!-- Form Search -->
+    <!-- Form Pencarian -->
     <form method="GET" action="{{ route('admin.karyawan') }}" 
           class="flex flex-wrap gap-2 items-center bg-white dark:bg-gray-700 p-4 rounded-xl shadow">
         <input type="text" name="search" value="{{ request('search') }}" 
@@ -51,14 +51,15 @@
                     <tr onclick="openFilter()" 
                         class="cursor-pointer border-t border-gray-200 dark:border-gray-600 
                                hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-                        <td class="py-3 px-5 text-gray-800 dark:text-gray-100">{{ $employee->name }}</td>
+                        <td class="py-3 px-5 text-gray-800 dark:text-gray-100">{{ $employee->nama }}</td>
                         <td class="py-3 px-5 text-gray-600 dark:text-gray-300">{{ $employee->email }}</td>
                         <td class="py-3 px-5 text-center space-x-2">
                             <a href="{{ route('admin.karyawan.edit', $employee->id) }}" 
                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1.5 rounded-lg shadow transition">
                                 Edit
                             </a>
-                            <form action="{{ route('admin.karyawan.destroy', $employee->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.karyawan.destroy', $employee->id) }}" 
+                                  method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
@@ -87,19 +88,21 @@
 
     <!-- Filter Sidebar -->
     <div id="filterSidebar" 
-         class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+         class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl 
+                transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
         
         <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Filter</h2>
-            <button onclick="closeFilter()" class="text-gray-600 dark:text-gray-300 hover:text-red-500">✕</button>
+            <button onclick="closeFilter()" 
+                    class="text-gray-600 dark:text-gray-300 hover:text-red-500 text-xl font-bold">×</button>
         </div>
 
-        <div class="p-5 space-y-4 text-sm text-gray-700 dark:text-gray-200">
-            
+        <div class="p-5 space-y-5 text-sm text-gray-700 dark:text-gray-200">
+
             <!-- Tahun Gabung -->
             <div>
                 <h3 class="font-semibold mb-2">Tahun Gabung</h3>
-                <div class="space-y-1">
+                <div class="space-y-2">
                     <label class="flex items-center gap-2"><input type="checkbox"> Semua</label>
                     <label class="flex items-center gap-2"><input type="checkbox"> Pilih Tahun</label>
                     <select class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:text-gray-100">
@@ -139,16 +142,18 @@
             <div>
                 <h3 class="font-semibold mb-2">Status</h3>
                 <div class="grid grid-cols-2 gap-1">
-                    @foreach(['Semua','Aktif','Resign','Supervisor'] as $stat)
+                    @foreach(['Semua','Aktif','Resign'] as $stat)
                         <label class="flex items-center gap-2"><input type="checkbox"> {{ $stat }}</label>
                     @endforeach
                 </div>
             </div>
 
-            <!-- Tombol -->
+            <!-- Tombol Filter -->
             <div class="flex justify-between mt-5">
-                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">Reset</button>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Terapkan</button>
+                <button onclick="closeFilter()" 
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">Reset</button>
+                <button onclick="closeFilter()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Terapkan</button>
             </div>
         </div>
     </div>
