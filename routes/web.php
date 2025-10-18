@@ -7,7 +7,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PengajuanController;
 
-// Root -> redirect sesuai login
+// Redirect utama
 Route::get('/', function () {
     if (auth()->check()) {
         return auth()->user()->role === 'admin'
@@ -17,48 +17,43 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Login hanya untuk guest
+// ================== LOGIN / LOGOUT ==================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
-
-// Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ================== ADMIN ==================
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/pengajuan', [PengajuanController::class, 'index'])->name('admin.pengajuan');
-    Route::post('/admin/pengajuan/{id}/status', [PengajuanController::class, 'updateStatus'])->name('pengajuan.updateStatus');
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // CRUD Karyawan
-    Route::get('/admin/karyawan', [AdminController::class, 'karyawan'])->name('admin.karyawan');
-    Route::get('/admin/karyawan/create', [AdminController::class, 'createKaryawan'])->name('admin.karyawan.create');
-    Route::post('/admin/karyawan', [AdminController::class, 'storeKaryawan'])->name('admin.karyawan.store');
-    Route::get('/admin/karyawan/{id}/edit', [AdminController::class, 'editKaryawan'])->name('admin.karyawan.edit');
-    Route::put('/admin/karyawan/{id}', [AdminController::class, 'updateKaryawan'])->name('admin.karyawan.update');
-    Route::delete('/admin/karyawan/{id}', [AdminController::class, 'destroyKaryawan'])->name('admin.karyawan.destroy');
+    // Dashboard
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // Fitur admin lainnya
-    Route::get('/admin/approval-workflow', [AdminController::class, 'approvalWorkflow'])->name('admin.approval-workflow');
-    Route::get('/admin/payroll', [App\Http\Controllers\AdminController::class, 'payroll'])->name('admin.payroll');
-    Route::get('/admin/bonus', [App\Http\Controllers\AdminController::class, 'bonus'])->name('admin.bonus');
+    // Karyawan
+    Route::view('/karyawan', 'admin.karyawan.karyawan')->name('karyawan');
+    Route::view('/karyawan/create', 'admin.karyawan.karyawan-create')->name('karyawan.create');
+    Route::view('/karyawan/edit', 'admin.karyawan.karyawan-edit')->name('karyawan.edit');
 
+    // Absensi
+    Route::view('/absen', 'admin.absen')->name('absen');
 
-    // Generate Absen
-    Route::get('/admin/absen', [AdminController::class, 'absensi'])->name('admin.absen');
+    // Approval Dropdown
+    Route::prefix('approval')->name('approval.')->group(function () {
+        Route::view('/cutiizin', 'admin.approval.cutiizin')->name('cutiizin');
+        Route::view('/lembur', 'admin.approval.lembur')->name('lembur');
+        Route::view('/bon', 'admin.approval.bon')->name('bon');
+    });
+
+    // Payroll Dropdown
+    Route::prefix('payroll')->name('payroll.')->group(function () {
+        Route::view('/gaji', 'admin.payroll.gaji')->name('gaji');
+        Route::view('/bon', 'admin.payroll.bon')->name('bon');
+        Route::view('/bonus', 'admin.payroll.bonus')->name('bonus');
+    });
+
+    // Jadwal, Rekap, dan Pengaturan
+    Route::view('/jadwal', 'admin.jadwal')->name('jadwal');
+    Route::view('/rekap', 'admin.rekap')->name('rekap');
+    Route::view('/pengaturan', 'admin.pengaturan')->name('pengaturan');
 });
-
-
-// ================== KARYAWAN ==================
-Route::middleware(['auth', 'role:karyawan'])->group(function () {
-    Route::get('/karyawan', [KaryawanController::class, 'showDashboard'])->name('karyawan.index');
-    Route::get('/karyawan/absen', [KaryawanController::class, 'showAbsen'])->name('karyawan.absen');
-    Route::post('/karyawan/absen', [KaryawanController::class, 'storeAbsen'])->name('karyawan.absen.store');
-
-    // Pengajuan
-Route::get('/karyawan/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('karyawan.pengajuan');
-Route::post('/karyawan/pengajuan', [PengajuanController::class, 'store'])->name('karyawan.pengajuan.store');
-});
-

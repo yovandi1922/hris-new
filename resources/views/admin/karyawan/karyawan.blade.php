@@ -3,7 +3,7 @@
 @section('title', 'Daftar Karyawan')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6 relative">
 
     <!-- Header -->
     <div class="flex justify-between items-center">
@@ -48,7 +48,8 @@
             </thead>
             <tbody>
                 @forelse($employees as $employee)
-                    <tr class="border-t border-gray-200 dark:border-gray-600 
+                    <tr onclick="openFilter()" 
+                        class="cursor-pointer border-t border-gray-200 dark:border-gray-600 
                                hover:bg-gray-50 dark:hover:bg-gray-600 transition">
                         <td class="py-3 px-5 text-gray-800 dark:text-gray-100">{{ $employee->name }}</td>
                         <td class="py-3 px-5 text-gray-600 dark:text-gray-300">{{ $employee->email }}</td>
@@ -83,5 +84,83 @@
     <div class="mt-4">
         {{ $employees->appends(['search' => request('search')])->links() }}
     </div>
+
+    <!-- Filter Sidebar -->
+    <div id="filterSidebar" 
+         class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+        
+        <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Filter</h2>
+            <button onclick="closeFilter()" class="text-gray-600 dark:text-gray-300 hover:text-red-500">✕</button>
+        </div>
+
+        <div class="p-5 space-y-4 text-sm text-gray-700 dark:text-gray-200">
+            
+            <!-- Tahun Gabung -->
+            <div>
+                <h3 class="font-semibold mb-2">Tahun Gabung</h3>
+                <div class="space-y-1">
+                    <label class="flex items-center gap-2"><input type="checkbox"> Semua</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Pilih Tahun</label>
+                    <select class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:text-gray-100">
+                        <option>2025</option>
+                        <option>2024</option>
+                        <option>2023</option>
+                    </select>
+                    <label class="flex items-center gap-2 mt-1"><input type="checkbox"> Rentang Tahun</label>
+                    <select class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:text-gray-100">
+                        <option>2021–2022</option>
+                        <option>2022–2023</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Departemen -->
+            <div>
+                <h3 class="font-semibold mb-2">Departemen</h3>
+                <div class="grid grid-cols-2 gap-1">
+                    @foreach(['Semua','Produksi','Quality Control','Gudang','HRD','Akutansi','Design','Keamanan'] as $dept)
+                        <label class="flex items-center gap-2"><input type="checkbox"> {{ $dept }}</label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Jabatan -->
+            <div>
+                <h3 class="font-semibold mb-2">Jabatan</h3>
+                <div class="grid grid-cols-2 gap-1">
+                    @foreach(['Semua','Operator','Staff','Supervisor'] as $jab)
+                        <label class="flex items-center gap-2"><input type="checkbox"> {{ $jab }}</label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div>
+                <h3 class="font-semibold mb-2">Status</h3>
+                <div class="grid grid-cols-2 gap-1">
+                    @foreach(['Semua','Aktif','Resign','Supervisor'] as $stat)
+                        <label class="flex items-center gap-2"><input type="checkbox"> {{ $stat }}</label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Tombol -->
+            <div class="flex justify-between mt-5">
+                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">Reset</button>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Terapkan</button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Script Filter -->
+<script>
+function openFilter() {
+    document.getElementById('filterSidebar').classList.remove('translate-x-full');
+}
+function closeFilter() {
+    document.getElementById('filterSidebar').classList.add('translate-x-full');
+}
+</script>
 @endsection
