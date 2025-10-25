@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Absen;
+use App\Models\Absen; // ✅ Tambahkan ini supaya bisa pakai model Absen
 
 class AdminController extends Controller
 {
@@ -36,7 +36,10 @@ class AdminController extends Controller
 
     public function absensi()
     {
+        // ✅ Ambil data absensi beserta relasi user
         $absensi = Absen::with('user')->latest()->get();
+
+        // ✅ Kirim variabel $absensi ke view
         return view('admin.absen', compact('absensi'));
     }
 
@@ -97,33 +100,5 @@ class AdminController extends Controller
         $karyawan->delete();
 
         return redirect()->route('admin.karyawan')->with('success', 'Karyawan berhasil dihapus');
-    }
-
-    // ✅ Tambahan: Manajemen Payroll
-    public function payroll()
-    {
-        $salaryComponents = [
-            'income' => [
-                ['id' => 1, 'name' => 'Gaji Pokok', 'amount' => 5000000],
-                ['id' => 2, 'name' => 'Tunjangan Transportasi', 'amount' => 750000],
-            ],
-            'deductions' => [
-                ['id' => 1, 'name' => 'BPJS', 'amount' => 250000],
-                ['id' => 2, 'name' => 'PPh 21', 'amount' => 300000],
-            ],
-        ];
-
-        return view('admin.payroll', compact('salaryComponents'));
-    }
-
-    // ✅ Tambahan: Manajemen Bonus
-    public function bonus()
-    {
-        $bonuses = [
-            ['id' => 1, 'employee' => 'Budi Santoso', 'amount' => 1000000, 'reason' => 'Kinerja Luar Biasa'],
-            ['id' => 2, 'employee' => 'Siti Aminah', 'amount' => 750000, 'reason' => 'Target Tercapai'],
-        ];
-
-        return view('admin.bonus', compact('bonuses'));
     }
 }
