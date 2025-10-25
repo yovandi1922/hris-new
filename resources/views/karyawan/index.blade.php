@@ -7,7 +7,6 @@
 
     {{-- Header --}}
     <div>
-        <h1 class="text-3xl font-bold mb-1 dark:text-white">Dashboard</h1>
         <p class="text-gray-500 dark:text-gray-400">Selamat datang kembali, {{ auth()->user()->name }} 👋</p>
     </div>
 

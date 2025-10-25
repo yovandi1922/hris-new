@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - HRIS MVR</title>
+    <!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 
     {{-- Tailwind & Alpine --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -110,8 +113,11 @@
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" title="Logout">
+                        <button type="submit" 
+                            class="w-full flex items-center justify-center gap-1 px-2 py-1 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+                        title="Logout">
                             <i class="fa-solid fa-right-from-bracket text-gray-500 hover:text-red-500 transition"></i>
+                        <span>Logout</span>
                         </button>
                     </form>
                 </div>
@@ -120,12 +126,69 @@
 
         {{-- Konten Utama --}}
         <main class="flex-1 p-6 overflow-y-auto transition-colors duration-300">
-            @yield('content')
-        </main>
+    @php
+    $routeName = Route::currentRouteName();
+
+    // Default
+    $root = 'Dashboard';
+    $pageTitle = 'Dashboard';
+    $breadcrumbs = [
+        ['label' => 'Dashboard', 'url' => route('karyawan.index')]
+    ];
+
+    // Atur sesuai route
+    switch ($routeName) {
+        case 'karyawan.index':
+            $pageTitle = 'Dashboard';
+            break;
+
+        case 'karyawan.absen':
+        case 'karyawan.absen.store':
+            $pageTitle = 'Absensi';
+            $breadcrumbs[] = ['label' => 'Absensi', 'url' => route('karyawan.absen')];
+            break;
+
+        case 'karyawan.pengajuan':
+        case 'karyawan.pengajuan.store':
+            $pageTitle = 'Cuti & Izin';
+            $breadcrumbs[] = ['label' => 'Cuti & Izin', 'url' => route('karyawan.pengajuan')];
+            break;
+
+        case 'karyawan.jadwal':
+        case 'karyawan.data':
+            $pageTitle = 'Jadwal Kerja';
+            $breadcrumbs[] = ['label' => 'Jadwal Kerja', 'url' => route('karyawan.jadwal')];
+            break;
+
+        default:
+            // Jika tidak ada yang cocok
+            $pageTitle = ucfirst(str_replace(['karyawan.', '.'], ['', ' '], $routeName));
+    }
+@endphp
+
+
+    <div class="flex justify-between items-center mb-6">
+    <!-- Title Page -->
+    <h1 class="text-2xl font-bold">{{ $pageTitle }}</h1>
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500">
+        @foreach ($breadcrumbs as $i => $breadcrumb)
+            @if ($i + 1 < count($breadcrumbs))
+                <a href="{{ $breadcrumb['url'] }}" class="text-blue-600 hover:underline">{{ $breadcrumb['label'] }}</a> /
+            @else
+                <span class="text-gray-700 font-semibold">{{ $breadcrumb['label'] }}</span>
+            @endif
+        @endforeach
+    </nav>
+</div>
+    {{-- Konten --}}
+    @yield('content')
+</main>
+
     </div>
 
-    {{-- FontAwesome --}}
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
 
     {{-- Terapkan tema saat load --}}
     <script>
