@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AdminKaryawanController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\KaryawanController;
@@ -35,13 +36,59 @@ Route::middleware(['auth', 'role:admin'])
     // ===== DASHBOARD =====
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // ===== CRUD KARYAWAN =====
-    Route::get('/karyawan', [AdminKaryawanController::class, 'index'])->name('karyawan');
-    Route::get('/karyawan/create', [AdminKaryawanController::class, 'create'])->name('karyawan.create');
-    Route::post('/karyawan/store', [AdminKaryawanController::class, 'store'])->name('karyawan.store');
-    Route::get('/karyawan/{id}/edit', [AdminKaryawanController::class, 'edit'])->name('karyawan.edit');
-    Route::put('/karyawan/{id}', [AdminKaryawanController::class, 'update'])->name('karyawan.update');
-    Route::delete('/karyawan/{id}', [AdminKaryawanController::class, 'destroy'])->name('karyawan.destroy');
+    // ===== KARYAWAN (DUMMY TANPA DATABASE) =====
+    Route::get('/karyawan', function (Request $request) {
+        $all = collect([
+            (object)['id' => 1, 'nama' => 'Budi Santoso', 'email' => 'budi@example.com'],
+            (object)['id' => 2, 'nama' => 'Siti Aminah', 'email' => 'siti@example.com'],
+            (object)['id' => 3, 'nama' => 'Agus Prasetyo', 'email' => 'agus@example.com'],
+            (object)['id' => 4, 'nama' => 'Rina Putri', 'email' => 'rina@example.com'],
+            (object)['id' => 5, 'nama' => 'Dedi Wijaya', 'email' => 'dedi@example.com'],
+        ]);
+
+        $perPage = 10;
+        $page = max(1, (int) $request->query('page', 1));
+        $slice = $all->forPage($page, $perPage);
+        $employees = new LengthAwarePaginator(
+            $slice->values(),
+            $all->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('admin.karyawan.karyawan', compact('employees'));
+    })->name('karyawan');
+
+    // ===== FORM TAMBAH KARYAWAN (DUMMY) =====
+    Route::get('/karyawan/create', function () {
+        return view('admin.karyawan.karyawan-create');
+    })->name('karyawan.create');
+
+    // ===== SIMPAN DATA BARU (DUMMY) =====
+    Route::post('/karyawan', function (Request $request) {
+        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil ditambahkan (dummy).');
+    })->name('karyawan.store');
+
+    // ===== FORM EDIT KARYAWAN (DUMMY) =====
+    Route::get('/karyawan/{id}/edit', function ($id) {
+        $karyawan = (object)[
+            'id' => $id,
+            'name' => 'Karyawan ' . $id,
+            'email' => 'karyawan' . $id . '@example.com',
+        ];
+        return view('admin.karyawan.karyawan-edit', compact('karyawan'));
+    })->name('karyawan.edit');
+
+    // ===== UPDATE KARYAWAN (DUMMY) =====
+    Route::put('/karyawan/{id}', function (Request $request, $id) {
+        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil diperbarui (dummy).');
+    })->name('karyawan.update');
+
+    // ===== HAPUS KARYAWAN (DUMMY) =====
+    Route::delete('/karyawan/{id}', function ($id) {
+        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil dihapus (dummy).');
+    })->name('karyawan.destroy');
 
     // ===== ABSENSI =====
     Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
@@ -65,21 +112,3 @@ Route::middleware(['auth', 'role:admin'])
     Route::view('/rekap', 'admin.rekap')->name('rekap');
     Route::view('/pengaturan', 'admin.pengaturan')->name('pengaturan');
 });
-
-// ================== KARYAWAN AREA ==================
-Route::middleware(['auth', 'role:karyawan'])
-    ->prefix('karyawan')
-    ->name('karyawan.')
-    ->group(function () {
-        // DASHBOARD
-        Route::get('/', [KaryawanController::class, 'showDashboard'])->name('index');
-
-        // ABSENSI
-        Route::get('/absen', [KaryawanController::class, 'showAbsen'])->name('absen');
-        Route::post('/absen', [KaryawanController::class, 'storeAbsen'])->name('absen.store');
-
-        // PENGAJUAN (cuti, lembur, bon, dll)
-        Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan');
-        Route::get('/pengajuan/create', [PengajuanController::class, 'create'])->name('pengajuan.create');
-        Route::post('/pengajuan/store', [PengajuanController::class, 'store'])->name('pengajuan.store');
-    });
