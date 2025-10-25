@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('karyawan.pengajuan');
     Route::post('/karyawan/pengajuan', [PengajuanController::class, 'store'])->name('karyawan.pengajuan.store');
 
-    // ================== DATA KARYAWAN ==================
+    // ================== DATA KARYAWAN & JADWAL ==================
     Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
+    Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
 });
