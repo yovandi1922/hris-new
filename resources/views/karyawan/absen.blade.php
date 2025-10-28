@@ -5,105 +5,174 @@
 @section('content')
 <div class="transition-colors duration-300">
 
-    {{-- Shift info + Tombol absen --}}
     <div class="flex flex-wrap items-start gap-6">
-        {{-- Shift info --}}
+
+        {{-- Kolom Kiri - Info Shift & Aktivitas --}}
         <div class="flex flex-col w-[650px]">
-            {{-- Kotak atas --}}
+            {{-- Info Shift --}}
             <div class="bg-white dark:bg-gray-800 shadow rounded-t-xl p-5 transition-colors duration-300">
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                            <i class="fa-solid fa-play text-black dark:text-white"></i>
-                            Mulai Shift
+                            <i class="fa-solid fa-play text-black dark:text-white"></i> Mulai Shift
                         </p>
                         <p class="font-bold text-lg text-gray-900 dark:text-gray-100">08:00</p>
                     </div>
 
-                    {{-- Garis Tengah --}}
                     <div class="w-px h-10 bg-gray-300 dark:bg-gray-700"></div>
 
                     <div>
                         <p class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                            <i class="fa-solid fa-flag-checkered text-black dark:text-white"></i>
-                            Akhiri Shift
+                            <i class="fa-solid fa-flag-checkered text-black dark:text-white"></i> Akhiri Shift
                         </p>
                         <p class="font-bold text-lg text-gray-900 dark:text-gray-100">16:00</p>
                     </div>
                 </div>
             </div>
 
-            {{-- Kotak bawah --}}
+            {{-- Waktu Sisa --}}
             <div class="bg-white dark:bg-gray-700 shadow rounded-b-xl p-3 border-t border-gray-300 dark:border-gray-600 transition-colors duration-300">
                 <p class="text-sm text-gray-600 dark:text-gray-300 text-center">
-                    Sisa waktu shift: 3 jam 34 menit
+                    @if($absenHariIni && $absenHariIni->jam_keluar)
+                        @php
+                            $sisa = 16 - \Carbon\Carbon::parse($absenHariIni->jam_masuk)->format('H');
+                        @endphp
+                        Sisa waktu shift: {{ $sisa }} jam
+                    @else
+                        Sisa waktu shift: -
+                    @endif
                 </p>
             </div>
 
-            {{-- Aktivitas Terakhir --}}
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 transition-colors duration-300 mt-2">
-                <div class="flex justify-between items-center mb-1">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Aktivitas Terakhir</h2>
-                    <a href="#" class="text-blue-600 dark:text-blue-400 text-sm">Lihat semua</a>
-                </div>
-                <ul class="space-y-1 mt-2">
-                    <li class="flex justify-between items-center border p-3 rounded-lg border-gray-100 dark:border-gray-700">
-                        <div>
-                            <p class="font-medium text-gray-800 dark:text-gray-100">Clock-in</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Rabu, 10 September</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-800 dark:text-gray-100">07:47</p>
-                            <p class="text-green-600 dark:text-green-400 text-xs">Tepat waktu</p>
-                        </div>
+            {{-- Aktivitas Hari Ini --}}
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Hari Ini</h2>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
+                <ul class="space-y-2">
+                    <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                        <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
+                        <span class="font-bold text-gray-800 dark:text-gray-100">
+                            {{ $absenHariIni?->jam_masuk ? \Carbon\Carbon::parse($absenHariIni->jam_masuk)->format('H:i') : '-' }}
+                        </span>
                     </li>
-                    <li class="flex justify-between items-center border p-3 rounded-lg border-gray-100 dark:border-gray-700">
-                        <div>
-                            <p class="font-medium text-gray-800 dark:text-gray-100">Clock-out</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Selasa, 9 September</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-800 dark:text-gray-100">16:01</p>
-                            <p class="text-green-600 dark:text-green-400 text-xs">Tepat waktu</p>
-                        </div>
+                    <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                        <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
+                        <span class="font-bold text-gray-800 dark:text-gray-100">
+                            {{ $absenHariIni?->jam_keluar ? \Carbon\Carbon::parse($absenHariIni->jam_keluar)->format('H:i') : '-' }}
+                        </span>
                     </li>
                 </ul>
             </div>
-        </div>
 
-        {{-- Tombol Clock-in/out --}}
-        <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 flex items-center justify-center w-[260px] h-95 transition-colors duration-300">
-            <div class="w-40 h-40 rounded-full flex items-center justify-center text-xl font-bold text-white
-                        shadow-md bg-gradient-to-br from-gray-800 to-gray-700 dark:from-gray-600 dark:to-gray-500 transition-colors duration-300">
-                @if(!$absenHariIni)
-                    <form action="{{ route('absen.clockin') }}" method="POST" class="w-full h-full flex items-center justify-center">
-                        @csrf
-                        <button type="submit" class="w-full h-full rounded-full">Clock-in</button>
-                    </form>
-                @elseif($absenHariIni && !$absenHariIni->jam_keluar)
-                    <form action="{{ route('absen.clockout') }}" method="POST" class="w-full h-full flex items-center justify-center">
-                        @csrf
-                        <button type="submit" class="w-full h-full rounded-full">Clock-out</button>
-                    </form>
+            {{-- Aktivitas Sebelumnya --}}
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Sebelumnya</h2>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
+                @if($absenKemarin)
+                    <ul class="space-y-2">
+                        <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-100">
+                                {{ \Carbon\Carbon::parse($absenKemarin->jam_masuk)->format('H:i') }}
+                            </span>
+                        </li>
+                        <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-100">
+                                {{ \Carbon\Carbon::parse($absenKemarin->jam_keluar)->format('H:i') }}
+                            </span>
+                        </li>
+                    </ul>
                 @else
-                    <span class="text-sm">Selesai</span>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada data aktivitas sebelumnya.</p>
                 @endif
             </div>
         </div>
-    </div>
 
-    {{-- Map --}}
- <div class="flex justify-end mt-0">
-    <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 transition-colors duration-300 
-                w-[260px] h-95 transform -translate-x-28 -translate-y-40">
-        <div class="w-full h-full bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden">
+        {{-- Kolom Kanan - Tombol Absen & Map --}}
+        <div class="flex flex-col items-center space-y-4">
+
+            {{-- Tombol Absen --}}
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 flex items-center justify-center w-[260px] h-95 transition-colors duration-300">
+                <div class="w-40 h-40 rounded-full flex flex-col items-center justify-center text-xl font-bold text-gray-800 dark:text-gray-100
+                            border-[10px] border-gray-400 shadow-md bg-transparent">
+
+                    {{-- Form Clock-in / Clock-out --}}
+                    @if(!$absenHariIni)
+                        <form id="formClockIn" action="{{ route('absen.clockin') }}" method="POST" class="flex flex-col items-center space-y-2">
+                            @csrf
+                            <i class="fa-solid fa-bell text-2xl"></i>
+                            <span class="text-base font-semibold">Clock-in</span>
+                        </form>
+                    @elseif($absenHariIni && !$absenHariIni->jam_keluar)
+                        <form id="formClockOut" action="{{ route('absen.clockout') }}" method="POST" class="flex flex-col items-center space-y-2">
+                            @csrf
+                            <i class="fa-solid fa-bell text-2xl"></i>
+                            <span class="text-base font-semibold">Clock-out</span>
+                        </form>
+                    @else
+                        <span class="text-sm">Selesai</span>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Map Lokasi Kantor --}}
             <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18..."
-                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                id="mapKantor"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7020.54201692134!2d110.75016364303524!3d-7.537057736596229!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a151693970459%3A0x393e41c5416cbc38!2sNeo%20Sangkal%20Putung!5e0!3m2!1sid!2sid!4v1761657936960!5m2!1sid!2sid"
+                class="w-[260px] h-[260px] rounded-xl"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
             </iframe>
+
         </div>
     </div>
 </div>
 
+{{-- Script Geolocation --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (!navigator.geolocation) {
+        alert('Browser Anda tidak mendukung GPS lokasi.');
+        return;
+    }
 
+    navigator.geolocation.getCurrentPosition(function(position) {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        const kantorLat = -7.5370577; // Koordinat kantor
+        const kantorLon = 110.7501636;
+        const radius = 0.1; // 0.1 km = 100 meter
+
+        const jarak = hitungJarak(userLat, userLon, kantorLat, kantorLon);
+
+        if (jarak > radius) {
+            alert('Anda berada di luar area kantor (' + Math.round(jarak*1000) + ' m). Absen tidak bisa dilakukan.');
+
+            document.getElementById('formClockIn')?.addEventListener('submit', e => e.preventDefault());
+            document.getElementById('formClockOut')?.addEventListener('submit', e => e.preventDefault());
+        } else {
+            console.log('Dalam area kantor, Anda bisa absen.');
+        }
+
+        // Update map dengan posisi user & kantor
+        const mapIframe = document.getElementById('mapKantor');
+        mapIframe.src = `https://www.google.com/maps?q=${userLat},${userLon}&z=16&output=embed`;
+    }, function(error) {
+        alert('Gagal mengakses lokasi: ' + error.message);
+    });
+});
+
+function hitungJarak(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+</script>
 @endsection
