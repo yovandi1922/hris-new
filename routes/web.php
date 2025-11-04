@@ -68,4 +68,8 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     // ================== DATA KARYAWAN & JADWAL ==================
     Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
     Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
+
+    // ================== DATA KARYAWAN & JADWAL ==================
+    Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
+    Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
 });
