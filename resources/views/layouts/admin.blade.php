@@ -45,7 +45,7 @@
                     <a href="{{ route('admin.karyawan') }}" class="flex items-center px-4 py-2 rounded-lg transition
                         @if(request()->routeIs('admin.karyawan')) bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-white font-semibold 
                         @else hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 @endif">
-                        <i class="fas fa-users mr-3"></i> Karyawan
+                        <i class="fas fa-users mr-3"></i> Kepegawaian
                     </a>
 
                     <a href="{{ route('admin.absen') }}" class="flex items-center px-4 py-2 rounded-lg transition
