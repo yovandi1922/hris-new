@@ -77,7 +77,7 @@ Route::middleware(['auth', 'role:admin'])
                 'name' => 'Karyawan ' . $id,
                 'email' => 'karyawan' . $id . '@example.com',
             ];
-            return view('admin.karyawan.edit', compact('karyawan'));
+            return view('admin.karyawan.karyawan-edit', compact('karyawan'));
         })->name('karyawan.edit');
 
         // ===== UPDATE KARYAWAN (DUMMY) =====

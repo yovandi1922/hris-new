@@ -29,7 +29,7 @@
 
     <div class="flex gap-2">
         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Update</button>
-        <a href="{{ route('admin.karyawan') }}" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</a>
+        <a href="{{ route('admin.karyawan.index') }}" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</a>
     </div>
 </form>
 @endsection

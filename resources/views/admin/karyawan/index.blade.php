@@ -54,7 +54,7 @@
                         <td class="py-3 px-5 text-gray-800 dark:text-gray-100">{{ $employee->nama }}</td>
                         <td class="py-3 px-5 text-gray-600 dark:text-gray-300">{{ $employee->email }}</td>
                         <td class="py-3 px-5 text-center space-x-2">
-                            <a href="{{ route('admin.karyawan.edit', $employee->id) }}" 
+                            <a href="{{ route('admin.karyawan.index', $employee->id) }}" 
                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1.5 rounded-lg shadow transition">
                                 Edit
                             </a>
