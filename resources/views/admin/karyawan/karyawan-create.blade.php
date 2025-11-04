@@ -10,7 +10,7 @@
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
             👤 Tambah Karyawan
         </h1>
-        <a href="{{ route('admin.karyawan') }}" 
+        <a href="{{ route('admin.karyawan.index') }}" 
            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow transition">
             ← Kembali
         </a>
@@ -67,7 +67,7 @@
 
             <!-- Tombol Simpan -->
             <div class="flex justify-end gap-3 pt-4 border-t">
-                <a href="{{ route('admin.karyawan') }}" 
+                <a href="{{ route('admin.karyawan.index') }}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg shadow transition">
                     Batal
                 </a>

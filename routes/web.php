@@ -33,82 +33,96 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-    // ===== DASHBOARD =====
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+        // ===== DASHBOARD =====
+        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // ===== KARYAWAN (DUMMY TANPA DATABASE) =====
-    Route::get('/karyawan', function (Request $request) {
-        $all = collect([
-            (object)['id' => 1, 'nama' => 'Budi Santoso', 'email' => 'budi@example.com'],
-            (object)['id' => 2, 'nama' => 'Siti Aminah', 'email' => 'siti@example.com'],
-            (object)['id' => 3, 'nama' => 'Agus Prasetyo', 'email' => 'agus@example.com'],
-            (object)['id' => 4, 'nama' => 'Rina Putri', 'email' => 'rina@example.com'],
-            (object)['id' => 5, 'nama' => 'Dedi Wijaya', 'email' => 'dedi@example.com'],
-        ]);
+        // ===== KARYAWAN (DUMMY TANPA DATABASE) =====
+        Route::get('/karyawan', function (Request $request) {
+            $all = collect([
+                (object)['id' => 1, 'nama' => 'Budi Santoso', 'email' => 'budi@example.com'],
+                (object)['id' => 2, 'nama' => 'Siti Aminah', 'email' => 'siti@example.com'],
+                (object)['id' => 3, 'nama' => 'Agus Prasetyo', 'email' => 'agus@example.com'],
+                (object)['id' => 4, 'nama' => 'Rina Putri', 'email' => 'rina@example.com'],
+                (object)['id' => 5, 'nama' => 'Dedi Wijaya', 'email' => 'dedi@example.com'],
+            ]);
 
-        $perPage = 10;
-        $page = max(1, (int) $request->query('page', 1));
-        $slice = $all->forPage($page, $perPage);
-        $employees = new LengthAwarePaginator(
-            $slice->values(),
-            $all->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+            $perPage = 10;
+            $page = max(1, (int) $request->query('page', 1));
+            $slice = $all->forPage($page, $perPage);
+            $employees = new LengthAwarePaginator(
+                $slice->values(),
+                $all->count(),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
 
-        return view('admin.karyawan.karyawan', compact('employees'));
-    })->name('karyawan');
+            return view('admin.karyawan.index', compact('employees'));
+        })->name('karyawan.index');
 
-    // ===== FORM TAMBAH KARYAWAN (DUMMY) =====
-    Route::get('/karyawan/create', function () {
-        return view('admin.karyawan.karyawan-create');
-    })->name('karyawan.create');
+        // ===== FORM TAMBAH KARYAWAN (DUMMY) =====
+        Route::get('/karyawan/create', function () {
+            return view('admin.karyawan.karyawan-create');
+        })->name('karyawan-create');
 
-    // ===== SIMPAN DATA BARU (DUMMY) =====
-    Route::post('/karyawan', function (Request $request) {
-        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil ditambahkan (dummy).');
-    })->name('karyawan.store');
+        // ===== SIMPAN DATA BARU (DUMMY) =====
+        Route::post('/karyawan', function (Request $request) {
+            return redirect()->route('admin.karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan (dummy).');
+        })->name('karyawan.store');
 
-    // ===== FORM EDIT KARYAWAN (DUMMY) =====
-    Route::get('/karyawan/{id}/edit', function ($id) {
-        $karyawan = (object)[
-            'id' => $id,
-            'name' => 'Karyawan ' . $id,
-            'email' => 'karyawan' . $id . '@example.com',
-        ];
-        return view('admin.karyawan.karyawan-edit', compact('karyawan'));
-    })->name('karyawan.edit');
+        // ===== FORM EDIT KARYAWAN (DUMMY) =====
+        Route::get('/karyawan/{id}/edit', function ($id) {
+            $karyawan = (object)[
+                'id' => $id,
+                'name' => 'Karyawan ' . $id,
+                'email' => 'karyawan' . $id . '@example.com',
+            ];
+            return view('admin.karyawan.edit', compact('karyawan'));
+        })->name('karyawan.edit');
 
-    // ===== UPDATE KARYAWAN (DUMMY) =====
-    Route::put('/karyawan/{id}', function (Request $request, $id) {
-        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil diperbarui (dummy).');
-    })->name('karyawan.update');
+        // ===== UPDATE KARYAWAN (DUMMY) =====
+        Route::put('/karyawan/{id}', function (Request $request, $id) {
+            return redirect()->route('admin.karyawan.index')->with('success', 'Data karyawan berhasil diperbarui (dummy).');
+        })->name('karyawan.update');
 
-    // ===== HAPUS KARYAWAN (DUMMY) =====
-    Route::delete('/karyawan/{id}', function ($id) {
-        return redirect()->route('admin.karyawan')->with('success', 'Data karyawan berhasil dihapus (dummy).');
-    })->name('karyawan.destroy');
+        // ===== HAPUS KARYAWAN (DUMMY) =====
+        Route::delete('/karyawan/{id}', function ($id) {
+            return redirect()->route('admin.karyawan.index')->with('success', 'Data karyawan berhasil dihapus (dummy).');
+        })->name('karyawan.destroy');
 
-    // ===== ABSENSI =====
-    Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
+        // ===== ABSENSI =====
+        Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
 
-    // ===== APPROVAL =====
-    Route::prefix('approval')->name('approval.')->group(function () {
-        Route::view('/cutiizin', 'admin.approval.cutiizin')->name('cutiizin');
-        Route::view('/lembur', 'admin.approval.lembur')->name('lembur');
-        Route::view('/bon', 'admin.approval.bon')->name('bon');
+        // ===== APPROVAL =====
+        Route::prefix('approval')->name('approval.')->group(function () {
+            Route::view('/cutiizin', 'admin.approval.cutiizin')->name('cutiizin');
+            Route::view('/lembur', 'admin.approval.lembur')->name('lembur');
+            Route::view('/bon', 'admin.approval.bon')->name('bon');
+        });
+
+        // ===== PAYROLL =====
+        Route::prefix('payroll')->name('payroll.')->group(function () {
+            Route::view('/gaji', 'admin.payroll.gaji')->name('gaji');
+            Route::view('/bon', 'admin.payroll.bon')->name('bon');
+            Route::view('/bonus', 'admin.payroll.bonus')->name('bonus');
+        });
+
+        // ===== JADWAL, REKAP, PENGATURAN =====
+        Route::view('/jadwal', 'admin.jadwal')->name('jadwal');
+        Route::view('/rekap', 'admin.rekap')->name('rekap');
+        Route::view('/pengaturan', 'admin.pengaturan')->name('pengaturan');
     });
 
-    // ===== PAYROLL =====
-    Route::prefix('payroll')->name('payroll.')->group(function () {
-        Route::view('/gaji', 'admin.payroll.gaji')->name('gaji');
-        Route::view('/bon', 'admin.payroll.bon')->name('bon');
-        Route::view('/bonus', 'admin.payroll.bonus')->name('bonus');
-    });
+// ================== KARYAWAN AREA ==================
+Route::middleware(['auth', 'role:karyawan'])
+    ->prefix('karyawan')
+    ->name('karyawan.')
+    ->group(function () {
+        Route::get('/', function () {
+            return view('karyawan.index');
+        })->name('index');
 
-    // ===== JADWAL, REKAP, PENGATURAN =====
-    Route::view('/jadwal', 'admin.jadwal')->name('jadwal');
-    Route::view('/rekap', 'admin.rekap')->name('rekap');
-    Route::view('/pengaturan', 'admin.pengaturan')->name('pengaturan');
-});
+       // ===== HALAMAN ABSENSI KARYAWAN =====
+        Route::get('/absen', [AbsensiController::class, 'index'])->name('absen');
+        Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan');
+    });

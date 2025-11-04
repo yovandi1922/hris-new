@@ -17,7 +17,7 @@ class AdminKaryawanController extends Controller
                   ->orWhere('email', 'like', "%{$search}%");
         })->paginate(10); // pagination 10 data per halaman
 
-        return view('admin.karyawan.karyawan', compact('employees'));
+        return view('admin.karyawan.index', compact('employees'));
     }
 
     // Form tambah karyawan

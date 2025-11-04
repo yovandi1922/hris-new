@@ -8,14 +8,14 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">👥 Daftar Karyawan</h1>
-        <a href="{{ route('admin.karyawan.create') }}" 
+        <a href="{{ route('admin.karyawan-create') }}" 
            class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow transition">
             + Tambah Karyawan
         </a>
     </div>
 
     <!-- Form Pencarian -->
-    <form method="GET" action="{{ route('admin.karyawan') }}" 
+    <form method="GET" action="{{ route('admin.karyawan.index') }}" 
           class="flex flex-wrap gap-2 items-center bg-white dark:bg-gray-700 p-4 rounded-xl shadow">
         <input type="text" name="search" value="{{ request('search') }}" 
                placeholder="Cari nama atau email..." 
@@ -29,7 +29,7 @@
         </button>
 
         @if(request('search'))
-            <a href="{{ route('admin.karyawan') }}" 
+            <a href="{{ route('admin.karyawan.index') }}" 
                class="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-xl shadow transition">
                 Reset
             </a>
