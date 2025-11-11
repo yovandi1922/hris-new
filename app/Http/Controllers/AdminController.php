@@ -31,7 +31,7 @@ class AdminController extends Controller
 
         $employees = $query->orderBy('name', 'asc')->paginate(5);
 
-        return view('admin.karyawan', compact('employees'));
+        return view('admin.karyawan.index', compact('employees'));
     }
 
     public function absensi()

@@ -28,11 +28,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ================== ADMIN ==================
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/pengajuan', [PengajuanController::class, 'index'])->name('admin.pengajuan');
-    Route::post('/admin/pengajuan/{id}/status', [PengajuanController::class, 'updateStatus'])->name('pengajuan.updateStatus');
+    
 
     // CRUD Karyawan
-    Route::get('/admin/karyawan', [AdminController::class, 'karyawan'])->name('admin.karyawan');
+   Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/karyawan', [AdminController::class, 'index'])->name('karyawan.index');
+});
     Route::get('/admin/karyawan/create', [AdminController::class, 'createKaryawan'])->name('admin.karyawan.create');
     Route::post('/admin/karyawan', [AdminController::class, 'storeKaryawan'])->name('admin.karyawan.store');
     Route::get('/admin/karyawan/{id}/edit', [AdminController::class, 'editKaryawan'])->name('admin.karyawan.edit');
@@ -40,9 +41,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/karyawan/{id}', [AdminController::class, 'destroyKaryawan'])->name('admin.karyawan.destroy');
 
     // Fitur admin lainnya
-    Route::get('/admin/approval-workflow', [AdminController::class, 'approvalWorkflow'])->name('admin.approval-workflow');
-    Route::get('/admin/payroll', [AdminController::class, 'payroll'])->name('admin.payroll');
-    Route::get('/admin/bonus', [AdminController::class, 'bonus'])->name('admin.bonus');
+    
 
     // Generate Absen
     Route::get('/admin/absen', [AdminController::class, 'absensi'])->name('admin.absen');
