@@ -8,7 +8,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">👥 Daftar Karyawan</h1>
-        <a href="{{ route('admin.karyawan-create') }}" 
+        <a href="" 
            class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow transition">
             + Tambah Karyawan
         </a>
@@ -58,7 +58,7 @@
                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1.5 rounded-lg shadow transition">
                                 Edit
                             </a>
-                            <form action="{{ route('admin.karyawan.destroy', $employee->id) }}" 
+                            <form action="', $employee->id) }}" 
                                   method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')

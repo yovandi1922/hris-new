@@ -26,25 +26,16 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ================== ADMIN ==================
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // CRUD Karyawan
-   Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/karyawan', [AdminController::class, 'index'])->name('karyawan.index');
-});
-    Route::get('/admin/karyawan/create', [AdminController::class, 'createKaryawan'])->name('admin.karyawan.create');
-    Route::post('/admin/karyawan', [AdminController::class, 'storeKaryawan'])->name('admin.karyawan.store');
-    Route::get('/admin/karyawan/{id}/edit', [AdminController::class, 'editKaryawan'])->name('admin.karyawan.edit');
-    Route::put('/admin/karyawan/{id}', [AdminController::class, 'updateKaryawan'])->name('admin.karyawan.update');
-    Route::delete('/admin/karyawan/{id}', [AdminController::class, 'destroyKaryawan'])->name('admin.karyawan.destroy');
-
-    // Fitur admin lainnya
+    Route::get('/karyawan', [AdminController::class, 'karyawan'])->name('karyawan.index');
     
 
-    // Generate Absen
-    Route::get('/admin/absen', [AdminController::class, 'absensi'])->name('admin.absen');
+    // Absensi
+    Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
 });
 
 // ================== KARYAWAN ==================

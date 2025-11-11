@@ -6,47 +6,159 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Absen; // ✅ Tambahkan ini supaya bisa pakai model Absen
+use App\Models\Absen;
+use App\Models\Cuti; // opsional, kalau ada tabel cuti
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+  
     public function dashboard()
-    {
-        $loggedUser = Auth::user(); 
-        $users = User::where('role', '!=', 'admin')->get();
+{
 
-        return view('admin.dashboard', compact('loggedUser', 'users'));
+    // Paksa timezone ke Jakarta
+    $now = Carbon::now('Asia/Jakarta');
+    $loggedUser = Auth::user();
+
+    // === Total karyawan (role = 'karyawan') ===
+    $totalKaryawan = User::where('role', 'karyawan')->count();
+
+    // === Sudah absen hari ini ===
+    $sudahAbsen = Absen::whereDate('tanggal', $now->toDateString())->distinct('user_id')->count('user_id');
+    $belumAbsen = max(0, $totalKaryawan - $sudahAbsen);
+
+    // === Absensi per minggu ===
+    $startOfWeek = $now->copy()->startOfWeek(); 
+    $endOfWeek   = $now->copy()->endOfWeek();
+
+    $rawAbsensi = Absen::selectRaw("DAYNAME(tanggal) as hari_en, COUNT(*) as total")
+        ->whereBetween('tanggal', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
+        ->groupBy('hari_en')
+        ->pluck('total', 'hari_en');
+
+    $daysOrder = [
+        'Monday'    => 'Sen',
+        'Tuesday'   => 'Sel',
+        'Wednesday' => 'Rab',
+        'Thursday'  => 'Kam',
+        'Friday'    => 'Jum'
+    ];
+
+    $absensiHarian = collect($daysOrder)->map(function ($shortName, $enName) use ($rawAbsensi) {
+        return (int) $rawAbsensi->get($enName, 0);
+    })->values();
+
+    // === Data Cuti (jika modelnya ada) ===
+    $cuti = collect([]);
+    if (class_exists(\App\Models\Cuti::class)) {
+        $rawCuti = \App\Models\Cuti::selectRaw("DAYNAME(created_at) as hari_en, COUNT(*) as total")
+            ->whereBetween('created_at', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
+            ->groupBy('hari_en')
+            ->pluck('total', 'hari_en');
+
+        $cuti = collect($daysOrder)->map(function ($shortName, $enName) use ($rawCuti) {
+            return (int) $rawCuti->get($enName, 0);
+        })->values();
     }
+
+    // === Format waktu dan tanggal ===
+    $daysIndo = [
+        'Monday'    => 'Senin',
+        'Tuesday'   => 'Selasa',
+        'Wednesday' => 'Rabu',
+        'Thursday'  => 'Kamis',
+        'Friday'    => 'Jumat',
+        'Saturday'  => 'Sabtu',
+        'Sunday'    => 'Minggu'
+    ];
+
+    $currentTime = $now->format('H:i');
+    $currentDayEn = $now->format('l');
+    $currentDay = $daysIndo[$currentDayEn] ?? $currentDayEn;
+    $currentDate = $now->translatedFormat('d F Y');
+
+    // === Greeting sesuai jam ===
+    $hour = (int) $now->format('H');
+    if ($hour >= 5 && $hour < 12) {
+        $greeting = 'Selamat pagi';
+    } elseif ($hour >= 12 && $hour < 17) {
+        $greeting = 'Selamat siang';
+    } elseif ($hour >= 17 && $hour < 20) {
+        $greeting = 'Selamat sore';
+    } else {
+        $greeting = 'Selamat malam';
+    }
+
+    // === 🔔 Sistem Notifikasi Otomatis ===
+    $notifikasi = [];
+
+    // 1️⃣ Belum absen hari ini
+    if ($belumAbsen > 0) {
+        $notifikasi[] = [
+            'icon' => '✖',
+            'color' => 'red',
+            'judul' => 'Absen',
+            'pesan' => "$belumAbsen karyawan belum melakukan absensi hari ini.",
+            'waktu' => $currentTime,
+        ];
+    }
+
+    // 2️⃣ Karyawan baru hari ini
+    $karyawanBaru = User::where('role', 'karyawan')
+        ->whereDate('created_at', $now->toDateString())
+        ->get();
+
+    if ($karyawanBaru->count() > 0) {
+        $notifikasi[] = [
+            'icon' => '👤',
+            'color' => 'green',
+            'judul' => 'Karyawan Baru',
+            'pesan' => "{$karyawanBaru->count()} karyawan baru telah ditambahkan hari ini.",
+            'waktu' => $currentTime,
+        ];
+    }
+
+    // === Kirim ke view ===
+    return view('admin.dashboard', [
+        'loggedUser'     => $loggedUser,
+        'totalKaryawan'  => $totalKaryawan,
+        'sudahAbsen'     => $sudahAbsen,
+        'belumAbsen'     => $belumAbsen,
+        'absensiHarian'  => $absensiHarian,
+        'cuti'           => $cuti,
+        'currentTime'    => $currentTime,
+        'currentDay'     => $currentDay,
+        'currentDate'    => $currentDate,
+        'greeting'       => $greeting,
+        'notifikasi'     => $notifikasi,
+    ]);
+}
+
+
 
     public function karyawan(Request $request)
     {
-        $query = User::where('role', 'karyawan');
+        $search = $request->input('search');
 
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $employees = $query->orderBy('name', 'asc')->paginate(5);
+        $employees = User::where('role', 'karyawan')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->paginate(10);
 
         return view('admin.karyawan.index', compact('employees'));
     }
 
     public function absensi()
     {
-        // ✅ Ambil data absensi beserta relasi user
         $absensi = Absen::with('user')->latest()->get();
-
-        // ✅ Kirim variabel $absensi ke view
         return view('admin.absen', compact('absensi'));
     }
 
     public function createKaryawan()
     {
-        $loggedUser = Auth::user();
-        return view('admin.karyawan-create', compact('loggedUser'));
+        //
     }
 
     public function storeKaryawan(Request $request)

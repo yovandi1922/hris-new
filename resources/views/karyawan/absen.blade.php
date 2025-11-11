@@ -95,22 +95,29 @@
                 <div class="w-40 h-40 rounded-full flex flex-col items-center justify-center text-xl font-bold text-gray-800 dark:text-gray-100
                             border-[10px] border-gray-400 shadow-md bg-transparent">
 
-                    {{-- Form Clock-in / Clock-out --}}
-                    @if(!$absenHariIni)
-                        <form id="formClockIn" action="{{ route('absen.clockin') }}" method="POST" class="flex flex-col items-center space-y-2">
-                            @csrf
-                            <i class="fa-solid fa-bell text-2xl"></i>
-                            <span class="text-base font-semibold">Clock-in</span>
-                        </form>
-                    @elseif($absenHariIni && !$absenHariIni->jam_keluar)
-                        <form id="formClockOut" action="{{ route('absen.clockout') }}" method="POST" class="flex flex-col items-center space-y-2">
-                            @csrf
-                            <i class="fa-solid fa-bell text-2xl"></i>
-                            <span class="text-base font-semibold">Clock-out</span>
-                        </form>
-                    @else
-                        <span class="text-sm">Selesai</span>
-                    @endif
+                    {{-- Clock In --}}
+@if(!$absenHariIni)
+    <form id="formClockIn" action="{{ route('absen.clockin') }}" method="POST" class="flex flex-col items-center space-y-2">
+        @csrf
+        <button type="submit" class="flex flex-col items-center">
+            <i class="fa-solid fa-bell text-2xl"></i>
+            <span class="text-base font-semibold">Clock-in</span>
+        </button>
+    </form>
+
+{{-- Clock Out --}}
+@elseif($absenHariIni && !$absenHariIni->jam_keluar)
+    <form id="formClockOut" action="{{ route('absen.clockout') }}" method="POST" class="flex flex-col items-center space-y-2">
+        @csrf
+        <button type="submit" class="flex flex-col items-center">
+            <i class="fa-solid fa-bell text-2xl"></i>
+            <span class="text-base font-semibold">Clock-out</span>
+        </button>
+    </form>
+@else
+    <span class="text-sm">Selesai</span>
+@endif
+
                 </div>
             </div>
 
@@ -132,6 +139,13 @@
 {{-- Script Geolocation --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const formClockIn = document.getElementById('formClockIn');
+    const formClockOut = document.getElementById('formClockOut');
+
+    // Nonaktif sementara sebelum verifikasi lokasi
+    if (formClockIn) formClockIn.querySelector('span').innerText = 'Memeriksa lokasi...';
+    if (formClockOut) formClockOut.querySelector('span').innerText = 'Memeriksa lokasi...';
+
     if (!navigator.geolocation) {
         alert('Browser Anda tidak mendukung GPS lokasi.');
         return;
@@ -141,38 +155,52 @@ document.addEventListener('DOMContentLoaded', function() {
         const userLat = position.coords.latitude;
         const userLon = position.coords.longitude;
 
-        const kantorLat = -7.5370577; // Koordinat kantor
-        const kantorLon = 110.7501636;
-        const radius = 0.1; // 0.1 km = 100 meter
+        // 🏢 Koordinat kantor
+        const kantorLat = -7.540880;
+        const kantorLon = 110.743645;
+
+        // 📏 Radius dalam kilometer (0.1 = 100 meter)
+        const radius = 0.1;
 
         const jarak = hitungJarak(userLat, userLon, kantorLat, kantorLon);
+        console.log('Jarak ke kantor:', jarak, 'km');
 
         if (jarak > radius) {
             alert('Anda berada di luar area kantor (' + Math.round(jarak*1000) + ' m). Absen tidak bisa dilakukan.');
 
-            document.getElementById('formClockIn')?.addEventListener('submit', e => e.preventDefault());
-            document.getElementById('formClockOut')?.addEventListener('submit', e => e.preventDefault());
+            // ❌ Blok form agar tidak bisa submit
+            if (formClockIn) formClockIn.addEventListener('submit', e => e.preventDefault());
+            if (formClockOut) formClockOut.addEventListener('submit', e => e.preventDefault());
         } else {
-            console.log('Dalam area kantor, Anda bisa absen.');
+            console.log('✅ Dalam area kantor, absen diaktifkan.');
         }
 
-        // Update map dengan posisi user & kantor
+        // ✅ Ubah teks tombol kembali ke normal
+        if (formClockIn) formClockIn.querySelector('span').innerText = 'Clock-in';
+        if (formClockOut) formClockOut.querySelector('span').innerText = 'Clock-out';
+
+        // 🗺️ Update map ke posisi user
         const mapIframe = document.getElementById('mapKantor');
         mapIframe.src = `https://www.google.com/maps?q=${userLat},${userLon}&z=16&output=embed`;
     }, function(error) {
         alert('Gagal mengakses lokasi: ' + error.message);
+        if (formClockIn) formClockIn.querySelector('span').innerText = 'Gagal akses GPS';
+        if (formClockOut) formClockOut.querySelector('span').innerText = 'Gagal akses GPS';
     });
 });
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
-    const R = 6371;
+    const R = 6371; // km
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const a = Math.sin(dLat/2)**2 +
               Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              Math.sin(dLon/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 </script>
+
+
+
 @endsection

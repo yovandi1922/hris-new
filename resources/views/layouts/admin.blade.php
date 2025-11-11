@@ -1,4 +1,4 @@
-layout admin
+
 <!DOCTYPE html>
 <html lang="id" x-data="{ darkMode: false }" x-bind:class="darkMode ? 'dark' : ''">
 <head>
