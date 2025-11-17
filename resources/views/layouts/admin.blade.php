@@ -69,10 +69,21 @@
                         <div x-show="openApproval" x-transition class="ml-10 mt-2 space-y-1">
                             
                     </div>
-
+                    <div>
+                        <button @click="openApproval = !openApproval" class="w-full flex justify-between items-center px-4 py-2 rounded-lg transition hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <span class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-3"></i> Jadwal Kerja
+                            </span>
+                            <svg :class="{ 'rotate-180': openApproval }" class="w-4 h-4 transform transition-transform duration-200"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="openApproval" x-transition class="ml-10 mt-2 space-y-1">
+                            
+                    </div>
+                   
                     
-                        <i class="fas fa-calendar-alt mr-3"></i> Jadwal Kerja
-                    </a>
 
                     <!-- Payroll Dropdown -->
                     <div>
@@ -89,11 +100,15 @@
                             <
                         </div>
                     </div>
-
-                   
-                        <i class="fas fa-file-alt mr-3"></i> Rekap
+                   <a href="{{ route('admin.karyawan.index') }}" class="flex items-center px-4 py-2 rounded-lg transition
+                        @if(request()->routeIs('admin.karyawan')) bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-white font-semibold 
+                        @else hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 @endif">
+                       <i class="fas fa-file-alt mr-3"></i> Rekap
                     </a>
-
+                   
+                      <a href="{{ route('admin.karyawan.index') }}" class="flex items-center px-4 py-2 rounded-lg transition
+                        @if(request()->routeIs('admin.karyawan')) bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-white font-semibold 
+                        @else hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 @endif">
                         <i class="fas fa-cog mr-3"></i> Pengaturan
                     </a>
 

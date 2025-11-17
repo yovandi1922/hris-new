@@ -43,50 +43,132 @@
                     @endif
                 </p>
             </div>
+{{-- Aktivitas Hari Ini --}}
+<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Hari Ini</h2>
+<div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
+    <ul class="space-y-3">
 
-            {{-- Aktivitas Hari Ini --}}
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Hari Ini</h2>
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
-                <ul class="space-y-2">
-                    <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
-                        <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
-                        <span class="font-bold text-gray-800 dark:text-gray-100">
-                            {{ $absenHariIni?->jam_masuk ? \Carbon\Carbon::parse($absenHariIni->jam_masuk)->format('H:i') : '-' }}
-                        </span>
-                    </li>
-                    <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
-                        <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
-                        <span class="font-bold text-gray-800 dark:text-gray-100">
-                            {{ $absenHariIni?->jam_keluar ? \Carbon\Carbon::parse($absenHariIni->jam_keluar)->format('H:i') : '-' }}
-                        </span>
-                    </li>
-                </ul>
-            </div>
+        {{-- CLOCK IN --}}
+        <li class="flex justify-between items-center border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+            @php
+                $jamMasuk = $absenHariIni?->jam_masuk ? \Carbon\Carbon::parse($absenHariIni->jam_masuk) : null;
+                $ketMasuk = '-';
+                $warnaMasuk = 'text-gray-500';
 
-            {{-- Aktivitas Sebelumnya --}}
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Sebelumnya</h2>
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
-                @if($absenKemarin)
-                    <ul class="space-y-2">
-                        <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
-                            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
-                            <span class="font-bold text-gray-800 dark:text-gray-100">
-                                {{ \Carbon\Carbon::parse($absenKemarin->jam_masuk)->format('H:i') }}
-                            </span>
-                        </li>
-                        <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
-                            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
-                            <span class="font-bold text-gray-800 dark:text-gray-100">
-                                {{ \Carbon\Carbon::parse($absenKemarin->jam_keluar)->format('H:i') }}
-                            </span>
-                        </li>
-                    </ul>
-                @else
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada data aktivitas sebelumnya.</p>
-                @endif
-            </div>
+                if ($jamMasuk) {
+                    if ($jamMasuk->format('H:i') === '08:00') {
+                        $ketMasuk = 'Tepat Waktu';
+                        $warnaMasuk = 'text-green-500';
+                    } elseif ($jamMasuk->greaterThan(\Carbon\Carbon::parse('08:00'))) {
+                        $ketMasuk = 'Terlambat';
+                        $warnaMasuk = 'text-red-500';
+                    }
+                }
+            @endphp
+
+            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
+
+            <span class="font-bold text-gray-800 dark:text-gray-100">
+                {{ $jamMasuk ? $jamMasuk->format('H:i') : '-' }}
+                <span class="ml-2 {{ $warnaMasuk }} text-sm">({{ $ketMasuk }})</span>
+            </span>
+        </li>
+
+        {{-- CLOCK OUT --}}
+        <li class="flex justify-between items-center border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+            @php
+                $jamKeluar = $absenHariIni?->jam_keluar ? \Carbon\Carbon::parse($absenHariIni->jam_keluar) : null;
+                $ketKeluar = '-';
+                $warnaKeluar = 'text-gray-500';
+
+                if ($jamKeluar) {
+                    if ($jamKeluar->format('H:i') === '16:00') {
+                        $ketKeluar = 'Selesai';
+                        $warnaKeluar = 'text-green-500';
+                    } elseif ($jamKeluar->greaterThan(\Carbon\Carbon::parse('16:00'))) {
+                        $menit = $jamKeluar->diffInMinutes(\Carbon\Carbon::parse('16:00'));
+                        $ketKeluar = 'Lembur ' . $menit . ' menit';
+                        $warnaKeluar = 'text-yellow-500';
+                    }
+                }
+            @endphp
+
+            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
+
+            <span class="font-bold text-gray-800 dark:text-gray-100">
+                {{ $jamKeluar ? $jamKeluar->format('H:i') : '-' }}
+                <span class="ml-2 {{ $warnaKeluar }} text-sm">({{ $ketKeluar }})</span>
+            </span>
+        </li>
+
+    </ul>
+</div>
+
+
+           {{-- Aktivitas Sebelumnya --}}
+<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-4">Aktivitas Sebelumnya</h2>
+<div class="bg-white dark:bg-gray-800 shadow rounded-xl p-5 mt-2 transition-colors duration-300">
+
+    @if($absenKemarin)
+
+        @php
+            // JAM MASUK
+            $jamMasukKemarin = \Carbon\Carbon::parse($absenKemarin->jam_masuk);
+            if ($jamMasukKemarin->format('H:i') === '08:00') {
+                $ketMasukK = 'Tepat Waktu';
+                $warnaMasukK = 'text-green-500';
+            } elseif ($jamMasukKemarin->greaterThan(\Carbon\Carbon::parse('08:00'))) {
+                $ketMasukK = 'Terlambat';
+                $warnaMasukK = 'text-red-500';
+            } else {
+                $ketMasukK = '-';
+                $warnaMasukK = 'text-gray-500';
+            }
+
+            // JAM KELUAR
+            $jamKeluarKemarin = \Carbon\Carbon::parse($absenKemarin->jam_keluar);
+            if ($jamKeluarKemarin->format('H:i') === '16:00') {
+                $ketKeluarK = 'Selesai';
+                $warnaKeluarK = 'text-green-500';
+            } elseif ($jamKeluarKemarin->greaterThan(\Carbon\Carbon::parse('16:00'))) {
+                $selisih = $jamKeluarKemarin->diffInMinutes(\Carbon\Carbon::parse('16:00'));
+                $ketKeluarK = 'Lembur ' . $selisih . ' menit';
+                $warnaKeluarK = 'text-yellow-500';
+            } else {
+                $ketKeluarK = '-';
+                $warnaKeluarK = 'text-gray-500';
+            }
+        @endphp
+
+        <ul class="space-y-2">
+
+            {{-- CLOCK IN --}}
+            <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                <span class="font-medium text-gray-800 dark:text-gray-100">Clock-in</span>
+
+                <span class="font-bold text-gray-800 dark:text-gray-100">
+                    {{ $jamMasukKemarin->format('H:i') }}
+                    <span class="ml-2 {{ $warnaMasukK }} text-sm">({{ $ketMasukK }})</span>
+                </span>
+            </li>
+
+            {{-- CLOCK OUT --}}
+            <li class="flex justify-between border p-3 rounded-lg border-gray-200 dark:border-gray-700">
+                <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
+
+                <span class="font-bold text-gray-800 dark:text-gray-100">
+                    {{ $jamKeluarKemarin->format('H:i') }}
+                    <span class="ml-2 {{ $warnaKeluarK }} text-sm">({{ $ketKeluarK }})</span>
+                </span>
+            </li>
+        </ul>
+
+    @else
+        <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada data aktivitas sebelumnya.</p>
+    @endif
+</div>
+
         </div>
-
         {{-- Kolom Kanan - Tombol Absen & Map --}}
         <div class="flex flex-col items-center space-y-4">
 

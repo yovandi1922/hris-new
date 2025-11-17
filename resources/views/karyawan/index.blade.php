@@ -46,29 +46,85 @@
     {{-- Baris kedua --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {{-- Absensi Hari Ini --}}
-        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 transition">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Absensi Hari Ini</h3>
+      {{-- Absensi Hari Ini --}}
+<div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 transition">
+    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        Absensi Hari Ini
+    </h3>
 
-            <div class="space-y-4">
-                {{-- Clock-in --}}
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-in</p>
-                        <p class="text-sm text-green-500">Tepat Waktu</p>
-                    </div>
-                    <p class="font-semibold text-gray-700 dark:text-gray-200">07:47 WIB</p>
-                </div>
+    <div class="space-y-4">
 
-                {{-- Clock-out --}}
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-out</p>
-                        <p class="text-sm text-gray-500">Belum Absen</p>
-                    </div>
-                    <p class="font-semibold text-gray-700 dark:text-gray-200">--:-- WIB</p>
-                </div>
-            </div>
+        {{-- Clock-in --}}
+<div class="flex items-center justify-between">
+    <div>
+        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-in</p>
+
+        @php
+            $status = 'Belum Absen';
+            $color  = 'text-gray-500';
+
+            if ($absenHariIni && $absenHariIni->jam_masuk) {
+                $jamMasuk = \Carbon\Carbon::parse($absenHariIni->jam_masuk);
+
+                if ($jamMasuk->lte(\Carbon\Carbon::createFromTime(8,0,0))) {
+                    $status = 'Tepat Waktu';
+                    $color  = 'text-green-500';
+                } else {
+                    $status = 'Terlambat';
+                    $color  = 'text-red-500';
+                }
+            }
+        @endphp
+
+        <p class="text-sm {{ $color }}">{{ $status }}</p>
+    </div>
+
+    <p class="font-semibold text-gray-700 dark:text-gray-200">
+        {{ $absenHariIni && $absenHariIni->jam_masuk 
+            ? \Carbon\Carbon::parse($absenHariIni->jam_masuk)->format('H:i')
+            : '--:--' }} WIB
+    </p>
+</div>
+
+       {{-- Clock-out --}}
+<div class="flex items-center justify-between">
+    <div>
+        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-out</p>
+
+        @php
+            $statusKeluar = 'Belum Absen';
+            $colorKeluar  = 'text-gray-500';
+            $jamLembur = 0;
+
+            if ($absenHariIni && $absenHariIni->jam_keluar) {
+                $jamKeluar = \Carbon\Carbon::parse($absenHariIni->jam_keluar);
+                $batasPulang = \Carbon\Carbon::createFromTime(16, 0, 0);
+
+                // Tepat waktu
+                if ($jamKeluar->lte($batasPulang)) {
+                    $statusKeluar = 'Pulang Tepat Waktu';
+                    $colorKeluar  = 'text-green-500';
+                } 
+                // Lembur
+                else {
+                    $jamLembur = $jamKeluar->diffInHours($batasPulang);
+                    $statusKeluar = 'Lembur ' . $jamLembur . ' Jam';
+                    $colorKeluar  = 'text-blue-500';
+                }
+            }
+        @endphp
+
+        <p class="text-sm {{ $colorKeluar }}">{{ $statusKeluar }}</p>
+    </div>
+
+    <p class="font-semibold text-gray-700 dark:text-gray-200">
+        {{ $absenHariIni && $absenHariIni->jam_keluar 
+            ? \Carbon\Carbon::parse($absenHariIni->jam_keluar)->format('H:i') 
+            : '--:--' }} WIB
+    </p>
+</div>
+
+    </div>
 
             <div class="mt-5 text-right">
                 <a href="{{ route('karyawan.absen') }}" class="px-4 py-2 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-semibold hover:opacity-90 transition">

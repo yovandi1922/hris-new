@@ -43,6 +43,9 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan', [KaryawanController::class, 'showDashboard'])->name('karyawan.index');
     Route::get('/karyawan/absen', [KaryawanController::class, 'showAbsen'])->name('karyawan.absen');
     Route::post('/karyawan/absen', [KaryawanController::class, 'storeAbsen'])->name('karyawan.absen.store');
+    Route::get('/karyawan/dashboard', [KaryawanController::class, 'showDashboard'])
+    ->name('karyawan.dashboard');
+
 
     // Absen
     Route::post('/absen/clockin', [KaryawanController::class, 'clockIn'])->name('absen.clockin');
