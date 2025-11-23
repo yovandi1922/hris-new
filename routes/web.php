@@ -61,4 +61,18 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     // ================== DATA KARYAWAN & JADWAL ==================
     Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
     Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
+
+    // ================== DATA KARYAWAN & JADWAL ==================
+    Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
+    Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
+
+    // ================== BON GAJI (DUMMY) ==================
+    Route::get('/karyawan/bon', function () {
+        return view('karyawan.bon_gaji');
+    })->name('karyawan.bon');
+
+    // ================== LEMBUR (DUMMY) ==================
+    Route::get('/karyawan/lembur', function () {
+        return view('karyawan.lembur');
+    })->name('karyawan.lembur');
 });

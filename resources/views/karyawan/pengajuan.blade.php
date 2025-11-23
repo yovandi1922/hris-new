@@ -1,154 +1,264 @@
 @extends('layouts.karyawan')
 
-@section('title', 'Pengajuan')
+@section('title', 'Pengajuan - Cuti & Izin')
 
 @section('content')
-<div class="p-6 bg-gray-100 min-h-screen dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-  <div class="max-w-5xl mx-auto">
+<div x-data="{ openModal: false }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-    {{-- HEADER --}}
-    <div class="relative bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg text-white p-8 mb-8">
-      <div class="absolute right-6 top-4 opacity-20 text-7xl font-extrabold select-none">📄</div>
-      <h1 class="text-3xl font-bold mb-2">Pengajuan Karyawan</h1>
-    </div>
+    {{-- HEADER JUDUL --}}
+    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
 
-    {{-- ALERT SUCCESS --}}
-    @if(session('success'))
-      <div class="bg-green-100 text-green-800 p-3 rounded-lg mb-6 border border-green-300 shadow-sm">
-        {{ session('success') }}
-      </div>
-    @endif
-
-    {{-- FORM PENGAJUAN --}}
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-10">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b border-gray-300 dark:border-gray-700 pb-2">
-        Buat Pengajuan Baru
-      </h2>
-
-      <form action="{{ route('karyawan.pengajuan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
-        @csrf
-
-        <div class="grid md:grid-cols-2 gap-6">
-          {{-- Tanggal --}}
-          <div>
-            <label for="tanggal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
-            <input type="date" id="tanggal" name="tanggal" required
-              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-          </div>
-
-          {{-- Jenis Pengajuan --}}
-          <div>
-            <label for="jenis" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Pengajuan</label>
-            <select id="jenis" name="jenis" required onchange="toggleForm()"
-              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-              <option value="">-- Pilih Jenis --</option>
-              <option value="cuti">Cuti</option>
-              <option value="lembur">Lembur</option>
-              <option value="kasbon">Kasbon</option>
-            </select>
-          </div>
+    {{-- RINGKASAN CUTI --}}
+    <div class="
+        bg-white dark:bg-gray-800
+        shadow-md rounded-2xl p-6
+        flex flex-col md:flex-row items-center justify-between gap-8
+        ring-1 ring-gray-200 dark:ring-gray-700
+    ">
+        {{-- Sisa Cuti --}}
+        <div class="text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Sisa Cuti</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">8</p>
+            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
-        {{-- FORM KHUSUS --}}
-        <div id="formCuti" class="hidden">
-          <label for="bukti" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Upload Bukti (opsional)</label>
-          <input type="file" name="bukti"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
+        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
+
+        {{-- Diambil --}}
+        <div class="text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Diambil</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">4</p>
+            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
-        <div id="formLembur" class="hidden">
-          <label for="jam_lembur" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Jumlah Jam Lembur</label>
-          <input type="number" id="jam_lembur" name="jam_lembur" min="1"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
+        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
+
+        {{-- Ditolak --}}
+        <div class="text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Ditolak</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">-</p>
+            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
-        <div id="formKasbon" class="hidden">
-          <label for="nominal" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nominal Kasbon</label>
-          <input type="number" id="nominal" name="nominal"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
-        </div>
-
-        {{-- Keterangan --}}
+        {{-- Tombol Ajukan --}}
         <div>
-          <label for="keterangan" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Keterangan</label>
-          <textarea id="keterangan" name="keterangan" rows="3" placeholder="Tuliskan alasan atau detail pengajuan..."
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"></textarea>
+            <button @click="openModal = true"
+               class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+                      shadow hover:opacity-80 transition">
+                Ajukan Cuti/Izin
+            </button>
         </div>
-
-        {{-- Tombol --}}
-        <div class="text-right">
-          <button type="submit"
-            class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 transition-all shadow">
-            Ajukan Sekarang
-          </button>
-        </div>
-      </form>
     </div>
 
-    {{-- DAFTAR PENGAJUAN --}}
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b border-gray-300 dark:border-gray-700 pb-2">
-        Daftar Pengajuan Saya
-      </h2>
+    {{-- RIWAYAT CUTI --}}
+    <div class="mt-10
+        bg-white dark:bg-gray-800
+        shadow-md rounded-2xl p-0
+        ring-1 ring-gray-200 dark:ring-gray-700">
 
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg text-sm">
-          <thead class="bg-blue-600 text-white dark:bg-gray-700">
-            <tr>
-              <th class="px-4 py-2 text-left">Tanggal</th>
-              <th class="px-4 py-2 text-left">Jenis</th>
-              <th class="px-4 py-2 text-left">Jam</th>
-              <th class="px-4 py-2 text-left">Nominal</th>
-              <th class="px-4 py-2 text-left">Keterangan</th>
-              <th class="px-4 py-2 text-left">Bukti</th>
-              <th class="px-4 py-2 text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($pengajuan as $p)
-              <tr class="text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ \Carbon\Carbon::parse($p->tanggal)->format('d M Y') }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ ucfirst($p->jenis) }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">{{ $p->jam_lembur ?? '-' }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  {{ $p->nominal ? 'Rp '.number_format($p->nominal,0,',','.') : '-' }}
-                </td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ $p->keterangan ?? '-' }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  @if($p->bukti)
-                    <a href="{{ asset('storage/'.$p->bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">Lihat</a>
-                  @else
-                    -
-                  @endif
-                </td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold
-                    {{ $p->status == 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                       ($p->status == 'disetujui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
-                    {{ ucfirst($p->status) }}
-                  </span>
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="7" class="px-4 py-6 text-center text-gray-500">Belum ada pengajuan.</td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
+        {{-- Judul --}}
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Riwayat Cuti</h2>
+        </div>
+
+        {{-- Tabel --}}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
+                        <th class="px-6 py-3 text-left font-semibold">Jenis</th>
+                        <th class="px-6 py-3 text-left font-semibold">Durasi</th>
+                        <th class="px-6 py-3 text-left font-semibold">Status</th>
+                        <th class="px-6 py-3 text-left font-semibold">Keterangan</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
+
+                    <tr>
+                        <td class="px-6 py-4">10–12 September</td>
+                        <td class="px-6 py-4">Cuti Tahunan</td>
+                        <td class="px-6 py-4">2 Hari</td>
+                        <td class="px-6 py-4 text-green-600 dark:text-green-400 font-semibold">Disetujui</td>
+                        <td class="px-6 py-4">-</td>
+                    </tr>
+
+                    <tr>
+                        <td class="px-6 py-4">29 Agustus</td>
+                        <td class="px-6 py-4">Izin Sakit</td>
+                        <td class="px-6 py-4">1 Hari</td>
+                        <td class="px-6 py-4 text-yellow-600 dark:text-yellow-400 font-semibold">Menunggu</td>
+                        <td class="px-6 py-4">Surat RS</td>
+                    </tr>
+
+                    <tr>
+                        <td class="px-6 py-4">5 Agustus</td>
+                        <td class="px-6 py-4">Cuti Pribadi</td>
+                        <td class="px-6 py-4">1 Hari</td>
+                        <td class="px-6 py-4 text-red-600 dark:text-red-400 font-semibold">Ditolak</td>
+                        <td class="px-6 py-4">Tidak Valid</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
     </div>
 
-  </div>
+
+
+    {{-- ===================== MODAL FORM ===================== --}}
+    <div
+        x-show="openModal"
+        x-transition.opacity
+        class="fixed inset-0 z-50 flex items-center justify-center">
+
+        {{-- Background Overlay --}}
+        <div
+            class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"
+            @click="openModal = false">
+        </div>
+
+        {{-- Card Modal --}}
+        <div
+            x-show="openModal"
+            x-transition
+            class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-3xl p-8 z-50">
+
+            <h2 class="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-100">
+                Form Pengajuan Cuti/Izin
+            </h2>
+
+            <form x-data="{
+                    start:'',
+                    end:'',
+                    duration:0,
+                    formatDate(d){
+                        const date = new Date(d);
+                        const options = { day:'numeric', month:'long', year:'numeric' };
+                        return date.toLocaleDateString('id-ID', options);
+                    }
+                }"
+                class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {{-- Jenis Pengajuan --}}
+                <div>
+                    <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
+                    <select class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                   border-gray-300 dark:border-gray-600
+                                   text-gray-800 dark:text-gray-100">
+                        <option>Pilih Pengajuan</option>
+                        <option>Cuti Tahunan</option>
+                        <option>Cuti Pribadi</option>
+                        <option>Izin Sakit</option>
+                        <option>Izin Lainnya</option>
+                    </select>
+                </div>
+
+                {{-- Keterangan --}}
+                <div>
+                    <label class="font-medium">Keterangan<span class="text-red-500">*</span></label>
+                    <textarea rows="3" class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                       border-gray-300 dark:border-gray-600
+                                       text-gray-800 dark:text-gray-100"
+                              placeholder="Tulis keterangan"></textarea>
+                </div>
+
+                {{-- Rentang Tanggal --}}
+                <div x-data="{ openCalendar:false }" class="relative">
+                    <label class="font-medium">Rentang Tanggal<span class="text-red-500">*</span></label>
+
+                    {{-- Tombol --}}
+                    <button
+                        type="button"
+                        @click="openCalendar = true"
+                        class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                               flex justify-between items-center
+                               border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+                        <span x-text="start && end ? formatDate(start) + ' - ' + formatDate(end) : 'Pilih Rentang Tanggal'"></span>
+                        <i class="fa-solid fa-calendar"></i>
+                    </button>
+
+                    {{-- Popup Kalender --}}
+                    <div x-show="openCalendar"
+                        x-transition
+                        class="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 shadow-xl rounded-xl p-5 z-50">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                            {{-- Tgl Mulai --}}
+                            <div>
+                                <p class="font-semibold mb-2">Tanggal Mulai</p>
+                                <input type="date" x-model="start"
+                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                              border-gray-300 dark:border-gray-600">
+                            </div>
+
+                            {{-- Tgl Selesai --}}
+                            <div>
+                                <p class="font-semibold mb-2">Tanggal Selesai</p>
+                                <input type="date" x-model="end"
+                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                              border-gray-300 dark:border-gray-600">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-3 mt-4">
+                            <button @click="openCalendar = false"
+                                    class="px-4 py-2 border rounded-md">
+                                Batal
+                            </button>
+
+                            <button
+                                @click="
+                                    if(start && end){
+                                        const s = new Date(start);
+                                        const e = new Date(end);
+                                        duration = Math.floor((e - s) / (1000*60*60*24)) + 1;
+                                        openCalendar = false;
+                                    }
+                                "
+                                class="px-4 py-2 bg-gray-900 text-white rounded-md dark:bg-white dark:text-gray-900">
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Lampiran --}}
+                <div>
+                    <label class="font-medium">Lampiran</label>
+                    <input type="file"
+                           class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                  border-gray-300 dark:border-gray-600
+                                  text-gray-800 dark:text-gray-100">
+                </div>
+
+                {{-- Durasi --}}
+                <div class="md:col-span-2">
+                    <label class="font-medium">Durasi :</label>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1" x-text="duration + ' Hari'"></p>
+                </div>
+
+                {{-- Tombol --}}
+                <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+                    <button class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+                        Submit
+                    </button>
+
+                    <button type="button"
+                            @click="openModal = false"
+                            class="px-6 py-2 rounded-md border border-gray-400 dark:border-gray-600
+                                   text-gray-700 dark:text-gray-300">
+                        Batal
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>
-
-<script>
-function toggleForm() {
-  const jenis = document.getElementById('jenis').value;
-  ['formCuti','formLembur','formKasbon'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  if (jenis === 'cuti') document.getElementById('formCuti').classList.remove('hidden');
-  if (jenis === 'lembur') document.getElementById('formLembur').classList.remove('hidden');
-  if (jenis === 'kasbon') document.getElementById('formKasbon').classList.remove('hidden');
-}
-</script>
 @endsection
