@@ -1,28 +1,156 @@
 @extends('layouts.karyawan')
 
-@section('title', 'Dashboard Karyawan')
+@section('title', 'Dashboard')
 
 @section('content')
-<div class="bg-white shadow rounded-lg p-6">
-    <h2 class="text-2xl font-bold mb-4">Halo, {{ auth()->user()->name }}</h2>
-    <p class="text-gray-600">Selamat datang di dashboard karyawan.</p>
+<div class="space-y-6">
 
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-blue-100 p-4 rounded shadow">
-            <h3 class="text-lg font-bold">Absen Hari Ini</h3>
-            <p class="text-gray-700">Klik tombol absen untuk mencatat kehadiran.</p>
-            <a href="{{ route('karyawan.absen') }}" class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Absen Sekarang
-            </a>
-             <a href="{{ route('karyawan.pengajuan') }}" class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                pengajuan
+    {{-- Header --}}
+    <div>
+        <p class="text-gray-500 dark:text-gray-400">Selamat datang kembali, {{ auth()->user()->name }} 👋</p>
+    </div>
+
+    {{-- Grid utama --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {{-- Shift Hari Ini --}}
+        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 flex flex-col justify-center text-center transition">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Shift Hari Ini</h3>
+            <div class="flex justify-center items-center space-x-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <span>08:00</span>
+                <span>–</span>
+                <span>16:00</span>
+            </div>
+        </div>
+
+        {{-- Jam Sekarang --}}
+        <div id="clock-card" class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 text-center transition">
+            <div class="text-5xl font-bold text-gray-900 dark:text-gray-100" id="clock-time">09:14</div>
+            <p class="text-gray-500 dark:text-gray-400 mt-2" id="clock-date">Rabu, 10 September 2025</p>
+        </div>
+
+        {{-- Gaji Bulan Ini --}}
+        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 flex flex-col justify-between transition">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Gaji Bulan Ini</h3>
+                <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">Rp 4.500.000</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sudah ditransfer (2 Oktober 2025)</p>
+            </div>
+            <a href="#" class="mt-4 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg text-sm font-semibold text-center hover:opacity-90 transition">
+                Lihat Slip Gaji
             </a>
         </div>
 
-        <div class="bg-green-100 p-4 rounded shadow">
-            <h3 class="text-lg font-bold">Profil</h3>
-            <p class="text-gray-700">Periksa informasi profil dan data karyawan Anda.</p>
+    </div>
+
+    {{-- Baris kedua --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      {{-- Absensi Hari Ini --}}
+<div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 transition">
+    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        Absensi Hari Ini
+    </h3>
+
+    <div class="space-y-4">
+
+        {{-- Clock-in --}}
+<div class="flex items-center justify-between">
+    <div>
+        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-in</p>
+
+        @php
+            $status = 'Belum Absen';
+            $color  = 'text-gray-500';
+
+            if ($absenHariIni && $absenHariIni->jam_masuk) {
+                $jamMasuk = \Carbon\Carbon::parse($absenHariIni->jam_masuk);
+
+                if ($jamMasuk->lte(\Carbon\Carbon::createFromTime(8,0,0))) {
+                    $status = 'Tepat Waktu';
+                    $color  = 'text-green-500';
+                } else {
+                    $status = 'Terlambat';
+                    $color  = 'text-red-500';
+                }
+            }
+        @endphp
+
+        <p class="text-sm {{ $color }}">{{ $status }}</p>
+    </div>
+
+    <p class="font-semibold text-gray-700 dark:text-gray-200">
+        {{ $absenHariIni && $absenHariIni->jam_masuk 
+            ? \Carbon\Carbon::parse($absenHariIni->jam_masuk)->format('H:i')
+            : '--:--' }} WIB
+    </p>
+</div>
+
+       {{-- Clock-out --}}
+<div class="flex items-center justify-between">
+    <div>
+        <p class="font-medium text-gray-800 dark:text-gray-100">Clock-out</p>
+
+        @php
+            $statusKeluar = 'Belum Absen';
+            $colorKeluar  = 'text-gray-500';
+            $jamLembur = 0;
+
+            if ($absenHariIni && $absenHariIni->jam_keluar) {
+                $jamKeluar = \Carbon\Carbon::parse($absenHariIni->jam_keluar);
+                $batasPulang = \Carbon\Carbon::createFromTime(16, 0, 0);
+
+                // Tepat waktu
+                if ($jamKeluar->lte($batasPulang)) {
+                    $statusKeluar = 'Pulang Tepat Waktu';
+                    $colorKeluar  = 'text-green-500';
+                } 
+                // Lembur
+                else {
+                    $jamLembur = $jamKeluar->diffInHours($batasPulang);
+                    $statusKeluar = 'Lembur ' . $jamLembur . ' Jam';
+                    $colorKeluar  = 'text-blue-500';
+                }
+            }
+        @endphp
+
+        <p class="text-sm {{ $colorKeluar }}">{{ $statusKeluar }}</p>
+    </div>
+
+    <p class="font-semibold text-gray-700 dark:text-gray-200">
+        {{ $absenHariIni && $absenHariIni->jam_keluar 
+            ? \Carbon\Carbon::parse($absenHariIni->jam_keluar)->format('H:i') 
+            : '--:--' }} WIB
+    </p>
+</div>
+
+    </div>
+
+            <div class="mt-5 text-right">
+                <a href="{{ route('karyawan.absen') }}" class="px-4 py-2 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm font-semibold hover:opacity-90 transition">
+                    Lihat Detail
+                </a>
+            </div>
+        </div>
+
+        {{-- Placeholder tambahan --}}
+        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">
+            <p>Konten tambahan bisa ditempatkan di sini (misalnya grafik kehadiran, ringkasan cuti, dsb).</p>
         </div>
     </div>
 </div>
+
+{{-- Jam real-time --}}
+<script>
+    function updateClock() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        const date = now.toLocaleDateString('id-ID', options);
+        document.getElementById('clock-time').textContent = time;
+        document.getElementById('clock-date').textContent = date.charAt(0).toUpperCase() + date.slice(1);
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
 @endsection
