@@ -43,7 +43,7 @@
             {{-- LOGO --}}
             <div class="flex items-center gap-3 px-6 py-6 border-b border-gray-700">
                 <img src="https://i.ibb.co/5jC2QdT/paradise-logo.png" class="w-10" alt="logo">
-                <span class="text-xl font-semibold">paradise.corp</span>
+                <span class="text-xl font-semibold">Hris</span>
             </div>
 
             {{-- MENU --}}
@@ -177,7 +177,5 @@
         }
     });
 </script>
->>>>>>> ongky
-
 </body>
 </html>
