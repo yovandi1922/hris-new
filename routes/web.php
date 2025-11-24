@@ -54,6 +54,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/pengajuan/tolak/{id}', [PengajuanController::class, 'tolak'])
         ->name('pengajuan.tolak');
 
+        // lembur//
+// Daftar karyawan
+ Route::get('/lembur', [AdminController::class, 'daftarKaryawan'])->name('lembur');
+    Route::get('/lembur/{id}', [AdminController::class, 'detailLembur'])->name('lembur.detail');
+
 });
 // ================== KARYAWAN ==================
 Route::middleware(['auth', 'role:karyawan'])->group(function () {

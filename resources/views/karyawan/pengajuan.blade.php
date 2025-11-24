@@ -6,7 +6,7 @@
 
 <div x-data="{ openModal: false, start:'', end:'', duration:0 }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-```
+
 <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
 
 {{-- Tombol Ajukan --}}
@@ -153,7 +153,7 @@
 
     </div>
 </div>
-```
+
 
 </div>
 

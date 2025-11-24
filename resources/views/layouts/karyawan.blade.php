@@ -91,13 +91,7 @@
             Cuti & Izin
         </a>
 
-        <a href="{{ route('pengajuan.create') }}"
-            class="block px-3 py-2 rounded-md transition
-            {{ request()->routeIs('pengajuan.create') 
-                ? 'bg-gray-700 text-white'
-                : 'hover:bg-gray-700/40 text-gray-300' }}">
-            Ajukan Pengajuan
-        </a>
+       
 
                         <a href="{{ route('karyawan.lembur') }}" class="block px-3 py-2 rounded-md transition
                             {{ request()->routeIs('karyawan.lembur')
