@@ -1,88 +1,144 @@
-@extends('layouts.admin')
+@extends('layouts.karyawan')
+
+@section('title', 'Pengajuan - Cuti & Izin')
 
 @section('content')
-<div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Daftar Pengajuan</h1>
 
-    @if(session('success'))
-        <p class="bg-green-100 text-green-700 p-2 rounded mb-3">{{ session('success') }}</p>
-    @endif
+<div class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+
+```
+<h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
+
+{{-- Tombol Ajukan --}}
+<button @click="document.getElementById('modalForm').classList.remove('hidden')"
+        class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+               shadow hover:opacity-80 transition mb-6">
+    Ajukan Cuti/Izin
+</button>
+
+{{-- Modal Form --}}
+<div id="modalForm" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black bg-opacity-40" 
+         onclick="this.parentElement.classList.add('hidden')"></div>
+
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-3xl p-8 z-50">
+        <h2 class="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-100">
+            Form Pengajuan Cuti/Izin
+        </h2>
+
+        <form action="{{ route('pengajuan.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            @csrf
+
+            {{-- Jenis Pengajuan --}}
+            <div>
+                <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
+                <select name="jenis" required
+                        class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                               border-gray-300 dark:border-gray-600
+                               text-gray-800 dark:text-gray-100">
+                    <option value="">Pilih Pengajuan</option>
+                    <option value="Cuti Tahunan">Cuti Tahunan</option>
+                    <option value="Cuti Pribadi">Cuti Pribadi</option>
+                    <option value="Izin Sakit">Izin Sakit</option>
+                    <option value="Izin Lainnya">Izin Lainnya</option>
+                </select>
+            </div>
+
+            {{-- Keterangan --}}
+            <div>
+                <label class="font-medium">Keterangan<span class="text-red-500">*</span></label>
+                <textarea name="keterangan" rows="3" required
+                          class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                 border-gray-300 dark:border-gray-600
+                                 text-gray-800 dark:text-gray-100"
+                          placeholder="Tulis keterangan"></textarea>
+            </div>
+
+            {{-- Tanggal Mulai --}}
+            <div>
+                <label class="font-medium">Tanggal Mulai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_mulai" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600
+                              text-gray-800 dark:text-gray-100">
+            </div>
+
+            {{-- Tanggal Selesai --}}
+            <div>
+                <label class="font-medium">Tanggal Selesai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_selesai" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600
+                              text-gray-800 dark:text-gray-100">
+            </div>
+
+            {{-- Lampiran --}}
+            <div>
+                <label class="font-medium">Lampiran</label>
+                <input type="file" name="bukti"
+                       class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600
+                              text-gray-800 dark:text-gray-100">
+            </div>
+
+            {{-- Tombol --}}
+            <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+                <button type="submit" 
+                        class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+                    Submit
+                </button>
+
+                <button type="button"
+                        onclick="document.getElementById('modalForm').classList.add('hidden')"
+                        class="px-6 py-2 rounded-md border border-gray-400 dark:border-gray-600
+                               text-gray-700 dark:text-gray-300">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Tabel Riwayat Cuti --}}
+<div class="mt-10 bg-white dark:bg-gray-800 shadow-md rounded-2xl p-0 ring-1 ring-gray-200 dark:ring-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Riwayat Cuti</h2>
+    </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full border border-gray-300">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-4 py-2 border">Nama</th>
-            <th class="px-4 py-2 border">Tanggal</th>
-            <th class="px-4 py-2 border">Jenis</th>
-            <th class="px-4 py-2 border">Jam Lembur</th>
-            <th class="px-4 py-2 border">Nominal</th>
-            <th class="px-4 py-2 border">Keterangan</th>
-            <th class="px-4 py-2 border">Bukti</th>
-            <th class="px-4 py-2 border">Status</th>
-            <th class="px-4 py-2 border">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($pengajuan as $p)
-            <tr class="hover:bg-gray-50 text-center">
-              <td class="px-4 py-2 border">{{ $p->user->name }}</td>
-              <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($p->tanggal)->format('d M Y') }}</td>
-              <td class="px-4 py-2 border">{{ ucfirst($p->jenis) }}</td>
-              <td class="px-4 py-2 border">{{ $p->jam_lembur ?? '-' }}</td>
-              <td class="px-4 py-2 border">{{ $p->nominal ? 'Rp '.number_format($p->nominal,0,',','.') : '-' }}</td>
-              <td class="px-4 py-2 border">{{ $p->keterangan ?? '-' }}</td>
-              <td class="px-4 py-2 border">
-                @if($p->bukti)
-                  <button onclick="showModal('{{ asset('storage/'.$p->bukti) }}')" class="text-blue-600 underline">Lihat Bukti</button>
-                @else
-                  -
-                @endif
-              </td>
-              <td class="px-4 py-2 border">
-                <span class="px-2 py-1 rounded text-white {{ $p->status == 'pending' ? 'bg-yellow-500' : ($p->status == 'disetujui' ? 'bg-green-600' : 'bg-red-600') }}">
-                  {{ ucfirst($p->status) }}
-                </span>
-              </td>
-              <td class="px-4 py-2 border">
-                <form action="{{ route('pengajuan.updateStatus', $p->id) }}" method="POST">
-                  @csrf
-                  <select name="status" onchange="this.form.submit()" class="border p-1 rounded">
-                    <option value="pending" {{ $p->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="disetujui" {{ $p->status == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="ditolak" {{ $p->status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                  </select>
-                </form>
-              </td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="9" class="px-4 py-6 text-center text-gray-500">Belum ada pengajuan.</td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
+        <table class="w-full text-sm">
+            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
+                    <th class="px-6 py-3 text-left font-semibold">Jenis</th>
+                    <th class="px-6 py-3 text-left font-semibold">Durasi</th>
+                    <th class="px-6 py-3 text-left font-semibold">Status</th>
+                    <th class="px-6 py-3 text-left font-semibold">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
+                @foreach($pengajuan as $p)
+                <tr>
+                    <td class="px-6 py-4">{{ $p->tanggal_mulai }} - {{ $p->tanggal_selesai }}</td>
+                    <td class="px-6 py-4">{{ $p->jenis }}</td>
+                    <td class="px-6 py-4">{{ $p->durasi }} Hari</td>
+                    <td class="px-6 py-4">
+                        @if($p->status == 'acc')
+                            <span class="text-green-600 dark:text-green-400 font-semibold">Disetujui</span>
+                        @elseif($p->status == 'ditolak')
+                            <span class="text-red-600 dark:text-red-400 font-semibold">Ditolak</span>
+                        @else
+                            <span class="text-yellow-600 dark:text-yellow-400 font-semibold">Menunggu</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">{{ $p->keterangan }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
+```
 
-{{-- modal --}}
-<div id="modalBukti" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white p-4 rounded shadow-lg max-w-2xl w-full">
-    <img id="buktiImage" src="" class="w-full h-auto">
-    <div class="text-right mt-3">
-      <button onclick="closeModal()" class="bg-gray-700 text-white px-3 py-1 rounded">Tutup</button>
-    </div>
-  </div>
 </div>
-
-<script>
-function showModal(src){
-  document.getElementById('buktiImage').src = src;
-  document.getElementById('modalBukti').classList.remove('hidden');
-  document.getElementById('modalBukti').classList.add('flex');
-}
-function closeModal(){
-  document.getElementById('modalBukti').classList.add('hidden');
-}
-</script>
 @endsection

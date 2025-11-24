@@ -3,262 +3,177 @@
 @section('title', 'Pengajuan - Cuti & Izin')
 
 @section('content')
-<div x-data="{ openModal: false }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-    {{-- HEADER JUDUL --}}
-    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
+<div x-data="{ openModal: false, start:'', end:'', duration:0 }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-    {{-- RINGKASAN CUTI --}}
-    <div class="
-        bg-white dark:bg-gray-800
-        shadow-md rounded-2xl p-6
-        flex flex-col md:flex-row items-center justify-between gap-8
-        ring-1 ring-gray-200 dark:ring-gray-700
-    ">
-        {{-- Sisa Cuti --}}
-        <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Sisa Cuti</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">8</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
-        </div>
+```
+<h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
 
-        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
+{{-- Tombol Ajukan --}}
+<div class="mb-8">
+    <button @click="openModal = true"
+       class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+              shadow hover:opacity-80 transition">
+        Ajukan Cuti/Izin
+    </button>
+</div>
 
-        {{-- Diambil --}}
-        <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Diambil</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">4</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
-        </div>
+{{-- Tabel Riwayat Cuti --}}
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-0 ring-1 ring-gray-200 dark:ring-gray-700 overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
+                <th class="px-6 py-3 text-left font-semibold">Jenis</th>
+                <th class="px-6 py-3 text-left font-semibold">Durasi</th>
+                <th class="px-6 py-3 text-left font-semibold">Status</th>
+                <th class="px-6 py-3 text-left font-semibold">Keterangan</th>
+            </tr>
+        </thead>
 
-        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
+            @foreach($pengajuan ?? [] as $p)
+                <tr>
+                    <td class="px-6 py-4">{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d M Y') }}
+                        @if($p->tanggal_selesai)
+                            - {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d M Y') }}
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">{{ $p->jenis }}</td>
+                    <td class="px-6 py-4">{{ $p->durasi ?? 1 }} Hari</td>
+                    <td class="px-6 py-4 font-semibold
+                        {{ $p->status == 'acc' ? 'text-green-600 dark:text-green-400' : ($p->status == 'ditolak' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400') }}">
+                        {{ ucfirst($p->status) }}
+                    </td>
+                    <td class="px-6 py-4">{{ $p->keterangan ?? '-' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
-        {{-- Ditolak --}}
-        <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Ditolak</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">-</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
-        </div>
+{{-- ===================== MODAL FORM ===================== --}}
+<div
+    x-show="openModal"
+    x-transition.opacity
+    class="fixed inset-0 z-50 flex items-center justify-center">
 
-        {{-- Tombol Ajukan --}}
-        <div>
-            <button @click="openModal = true"
-               class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
-                      shadow hover:opacity-80 transition">
-                Ajukan Cuti/Izin
-            </button>
-        </div>
+    {{-- Background Overlay --}}
+    <div
+        class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"
+        @click="openModal = false">
     </div>
 
-    {{-- RIWAYAT CUTI --}}
-    <div class="mt-10
-        bg-white dark:bg-gray-800
-        shadow-md rounded-2xl p-0
-        ring-1 ring-gray-200 dark:ring-gray-700">
-
-        {{-- Judul --}}
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Riwayat Cuti</h2>
-        </div>
-
-        {{-- Tabel --}}
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
-                        <th class="px-6 py-3 text-left font-semibold">Jenis</th>
-                        <th class="px-6 py-3 text-left font-semibold">Durasi</th>
-                        <th class="px-6 py-3 text-left font-semibold">Status</th>
-                        <th class="px-6 py-3 text-left font-semibold">Keterangan</th>
-                    </tr>
-                </thead>
-
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
-
-                    <tr>
-                        <td class="px-6 py-4">10–12 September</td>
-                        <td class="px-6 py-4">Cuti Tahunan</td>
-                        <td class="px-6 py-4">2 Hari</td>
-                        <td class="px-6 py-4 text-green-600 dark:text-green-400 font-semibold">Disetujui</td>
-                        <td class="px-6 py-4">-</td>
-                    </tr>
-
-                    <tr>
-                        <td class="px-6 py-4">29 Agustus</td>
-                        <td class="px-6 py-4">Izin Sakit</td>
-                        <td class="px-6 py-4">1 Hari</td>
-                        <td class="px-6 py-4 text-yellow-600 dark:text-yellow-400 font-semibold">Menunggu</td>
-                        <td class="px-6 py-4">Surat RS</td>
-                    </tr>
-
-                    <tr>
-                        <td class="px-6 py-4">5 Agustus</td>
-                        <td class="px-6 py-4">Cuti Pribadi</td>
-                        <td class="px-6 py-4">1 Hari</td>
-                        <td class="px-6 py-4 text-red-600 dark:text-red-400 font-semibold">Ditolak</td>
-                        <td class="px-6 py-4">Tidak Valid</td>
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-
-    {{-- ===================== MODAL FORM ===================== --}}
+    {{-- Card Modal --}}
     <div
         x-show="openModal"
-        x-transition.opacity
-        class="fixed inset-0 z-50 flex items-center justify-center">
+        x-transition
+        class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-3xl p-8 z-50">
 
-        {{-- Background Overlay --}}
-        <div
-            class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"
-            @click="openModal = false">
-        </div>
+        <h2 class="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-100">
+            Form Pengajuan Cuti/Izin
+        </h2>
 
-        {{-- Card Modal --}}
-        <div
-            x-show="openModal"
-            x-transition
-            class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-3xl p-8 z-50">
+        <form action="{{ route('pengajuan.store') }}" method="POST" enctype="multipart/form-data"
+              class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            @csrf
 
-            <h2 class="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-100">
-                Form Pengajuan Cuti/Izin
-            </h2>
-
-            <form x-data="{
-                    start:'',
-                    end:'',
-                    duration:0,
-                    formatDate(d){
-                        const date = new Date(d);
-                        const options = { day:'numeric', month:'long', year:'numeric' };
-                        return date.toLocaleDateString('id-ID', options);
-                    }
-                }"
-                class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                {{-- Jenis Pengajuan --}}
-                <div>
-                    <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
-                    <select class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                   border-gray-300 dark:border-gray-600
-                                   text-gray-800 dark:text-gray-100">
-                        <option>Pilih Pengajuan</option>
-                        <option>Cuti Tahunan</option>
-                        <option>Cuti Pribadi</option>
-                        <option>Izin Sakit</option>
-                        <option>Izin Lainnya</option>
-                    </select>
-                </div>
-
-                {{-- Keterangan --}}
-                <div>
-                    <label class="font-medium">Keterangan<span class="text-red-500">*</span></label>
-                    <textarea rows="3" class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                       border-gray-300 dark:border-gray-600
-                                       text-gray-800 dark:text-gray-100"
-                              placeholder="Tulis keterangan"></textarea>
-                </div>
-
-                {{-- Rentang Tanggal --}}
-                <div x-data="{ openCalendar:false }" class="relative">
-                    <label class="font-medium">Rentang Tanggal<span class="text-red-500">*</span></label>
-
-                    {{-- Tombol --}}
-                    <button
-                        type="button"
-                        @click="openCalendar = true"
+            {{-- Jenis Pengajuan --}}
+            <div>
+                <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
+                <select name="jenis" required
                         class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                               flex justify-between items-center
                                border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
-                        <span x-text="start && end ? formatDate(start) + ' - ' + formatDate(end) : 'Pilih Rentang Tanggal'"></span>
-                        <i class="fa-solid fa-calendar"></i>
-                    </button>
+                    <option value="">Pilih Pengajuan</option>
+                    <option value="Cuti Tahunan">Cuti Tahunan</option>
+                    <option value="Cuti Pribadi">Cuti Pribadi</option>
+                    <option value="Izin Sakit">Izin Sakit</option>
+                    <option value="Izin Lainnya">Izin Lainnya</option>
+                </select>
+            </div>
 
-                    {{-- Popup Kalender --}}
-                    <div x-show="openCalendar"
-                        x-transition
-                        class="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 shadow-xl rounded-xl p-5 z-50">
+            {{-- Keterangan --}}
+            <div>
+                <label class="font-medium">Keterangan</label>
+                <textarea name="keterangan" rows="3"
+                          class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                          placeholder="Tulis keterangan"></textarea>
+            </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {{-- Tanggal --}}
+            <div>
+                <label class="font-medium">Tanggal Mulai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_mulai" x-model="start" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
 
-                            {{-- Tgl Mulai --}}
-                            <div>
-                                <p class="font-semibold mb-2">Tanggal Mulai</p>
-                                <input type="date" x-model="start"
-                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                              border-gray-300 dark:border-gray-600">
-                            </div>
+            <div>
+                <label class="font-medium">Tanggal Selesai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_selesai" x-model="end" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
 
-                            {{-- Tgl Selesai --}}
-                            <div>
-                                <p class="font-semibold mb-2">Tanggal Selesai</p>
-                                <input type="date" x-model="end"
-                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                              border-gray-300 dark:border-gray-600">
-                            </div>
-                        </div>
+            {{-- Durasi (hidden) --}}
+            <input type="hidden" name="durasi" :value="duration">
 
-                        <div class="flex justify-end gap-3 mt-4">
-                            <button @click="openCalendar = false"
-                                    class="px-4 py-2 border rounded-md">
-                                Batal
-                            </button>
+            {{-- Lampiran --}}
+            <div class="md:col-span-2">
+                <label class="font-medium">Lampiran</label>
+                <input type="file" name="bukti"
+                       class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
 
-                            <button
-                                @click="
-                                    if(start && end){
-                                        const s = new Date(start);
-                                        const e = new Date(end);
-                                        duration = Math.floor((e - s) / (1000*60*60*24)) + 1;
-                                        openCalendar = false;
-                                    }
-                                "
-                                class="px-4 py-2 bg-gray-900 text-white rounded-md dark:bg-white dark:text-gray-900">
-                                Simpan
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {{-- Hitung Durasi --}}
+            <div class="md:col-span-2 mt-2">
+                <p class="text-gray-600 dark:text-gray-300">
+                    Durasi: <span x-text="start && end ? Math.floor((new Date(end) - new Date(start)) / (1000*60*60*24) + 1) : 0"></span> Hari
+                </p>
+            </div>
 
-                {{-- Lampiran --}}
-                <div>
-                    <label class="font-medium">Lampiran</label>
-                    <input type="file"
-                           class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                  border-gray-300 dark:border-gray-600
-                                  text-gray-800 dark:text-gray-100">
-                </div>
+            {{-- Tombol --}}
+            <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+                <button type="submit"
+                        class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+                    Submit
+                </button>
 
-                {{-- Durasi --}}
-                <div class="md:col-span-2">
-                    <label class="font-medium">Durasi :</label>
-                    <p class="text-gray-600 dark:text-gray-300 mt-1" x-text="duration + ' Hari'"></p>
-                </div>
+                <button type="button"
+                        @click="openModal = false"
+                        class="px-6 py-2 rounded-md border border-gray-400 dark:border-gray-600
+                               text-gray-700 dark:text-gray-300">
+                    Batal
+                </button>
+            </div>
 
-                {{-- Tombol --}}
-                <div class="md:col-span-2 flex justify-center gap-4 mt-4">
-                    <button class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
-                        Submit
-                    </button>
-
-                    <button type="button"
-                            @click="openModal = false"
-                            class="px-6 py-2 rounded-md border border-gray-400 dark:border-gray-600
-                                   text-gray-700 dark:text-gray-300">
-                        Batal
-                    </button>
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
+</div>
+```
 
 </div>
+
+{{-- Alpine untuk durasi --}}
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('cutiForm', () => ({
+        start: '',
+        end: '',
+        get duration() {
+            if(this.start && this.end){
+                const s = new Date(this.start);
+                const e = new Date(this.end);
+                return Math.floor((e - s)/(1000*60*60*24)) + 1;
+            }
+            return 0;
+        }
+    }));
+});
+</script>
+
 @endsection

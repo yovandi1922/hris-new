@@ -70,27 +70,34 @@
                 </a>
 
                 {{-- Pengajuan --}}
-                <div x-data="{ open: {{ request()->routeIs('karyawan.pengajuan') ? 'true' : 'false' }} }">
-                    <button @click="open = !open"
-                        class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition
-                            hover:bg-gray-700/40 text-gray-300">
-                        <span class="flex items-center gap-3">
-                            <i class="fa-solid fa-folder text-lg"></i>
-                            Pengajuan
-                        </span>
-                        <i class="fa-solid text-xs" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-                    </button>
+<div x-data="{ open: {{ request()->routeIs('pengajuan.*') ? 'true' : 'false' }} }">
+    <button @click="open = !open"
+        class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition
+            hover:bg-gray-700/40 text-gray-300">
+        <span class="flex items-center gap-3">
+            <i class="fa-solid fa-folder text-lg"></i>
+            Pengajuan
+        </span>
+        <i class="fa-solid text-xs" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+    </button>
 
+    <div x-show="open" x-collapse class="ml-10 mt-1 space-y-1">
 
-                    <div x-show="open" x-collapse class="ml-10 mt-1 space-y-1">
+        <a href="{{ route('pengajuan.karyawan') }}"
+            class="block px-3 py-2 rounded-md transition
+            {{ request()->routeIs('pengajuan.karyawan') 
+                ? 'bg-gray-700 text-white'
+                : 'hover:bg-gray-700/40 text-gray-300' }}">
+            Cuti & Izin
+        </a>
 
-                        <a href="{{ route('karyawan.pengajuan') }}"
-                            class="block px-3 py-2 rounded-md transition
-                            {{ request()->routeIs('karyawan.pengajuan')
-                                ? 'bg-gray-700 text-white'
-                                : 'hover:bg-gray-700/40 text-gray-300' }}">
-                            Cuti & Izin
-                        </a>
+        <a href="{{ route('pengajuan.create') }}"
+            class="block px-3 py-2 rounded-md transition
+            {{ request()->routeIs('pengajuan.create') 
+                ? 'bg-gray-700 text-white'
+                : 'hover:bg-gray-700/40 text-gray-300' }}">
+            Ajukan Pengajuan
+        </a>
 
                         <a href="{{ route('karyawan.lembur') }}" class="block px-3 py-2 rounded-md transition
                             {{ request()->routeIs('karyawan.lembur')

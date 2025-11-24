@@ -15,15 +15,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             
             // Data pengajuan
-            $table->date('tanggal'); // tanggal pengajuan
-            $table->string('jenis'); // cuti, lembur, kasbon
-            $table->integer('jam_lembur')->nullable(); // khusus lembur
-            $table->integer('nominal')->nullable(); // khusus kasbon
+            $table->date('tanggal_mulai'); // tanggal mulai cuti/izin
+            $table->date('tanggal_selesai'); // tanggal selesai cuti/izin
+            $table->string('jenis'); // Cuti Tahunan, Cuti Pribadi, Izin Sakit, dll
+            $table->integer('durasi')->default(1); // durasi hari
             $table->string('bukti')->nullable(); // upload bukti
             $table->text('keterangan')->nullable(); // tambahan keterangan
             
-            // Status pengajuan (pending, disetujui, ditolak)
-            $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
+            // Status pengajuan (pending, acc, ditolak)
+            $table->enum('status', ['pending', 'acc', 'ditolak'])->default('pending');
 
             $table->timestamps();
         });
