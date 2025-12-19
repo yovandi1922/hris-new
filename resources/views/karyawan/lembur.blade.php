@@ -34,46 +34,32 @@
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Lembur</h1>
 
         {{-- RINGKASAN --}}
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-8
-                    border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6
+                    border border-gray-200 dark:border-gray-700
+                    grid grid-cols-3 gap-2 max-w-md">
 
-            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
-                Ringkasan Lembur
-            </h2>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-
-                <div>
-                    <p class="text-gray-500 dark:text-gray-400">Total Lembur</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">12</p>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Jam</span>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 dark:text-gray-400">Total Pengajuan</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">4</p>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 dark:text-gray-400">Disetujui</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">3</p>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
-                </div>
-
-                <div>
-                    <p class="text-gray-500 dark:text-gray-400">Ditolak</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">1</p>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
-                </div>
-
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total Lembur</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">12</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Jam</span>
             </div>
 
-            <div class="mt-8 flex justify-center">
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Disetujui</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">3</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Kali</span>
+            </div>
+
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Ditolak</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">1</p>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Kali</span>
+            </div>
+
+            <div class="col-span-3 mt-2 flex justify-center">
                 <button @click="openLembur = true"
-                    class="px-6 py-2 rounded-full border border-gray-400 dark:border-gray-600
-                           text-gray-600 dark:text-gray-200
-                           hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    class="px-4 py-1.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm
+                           shadow hover:opacity-80 transition">
                     Ajukan Lembur
                 </button>
             </div>

@@ -73,7 +73,7 @@
         </div>
 
         {{-- Gaji Bulan Ini --}}
-        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-7 flex flex-col justify-between transition">
+        <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-[1.625rem] flex flex-col justify-between transition">
             <div>
                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Gaji Bulan Ini</h3>
                 <p class="text-4xl font-bold text-gray-900 dark:text-gray-100">Rp 4.500.000</p>

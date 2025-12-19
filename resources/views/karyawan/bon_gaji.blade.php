@@ -4,108 +4,148 @@
 
 @section('content')
 <div class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    {{-- Breadcrumb --}}
+    <div class="mb-6 text-base text-gray-600 dark:text-gray-400 text-right">
+        <a href="{{ route('karyawan.index') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Dashboard</a>
+        <span class="mx-2">/</span>
+        <a href="{{ route('karyawan.pengajuan') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Pengajuan</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 dark:text-gray-100">Bon Gaji</span>
+    </div>
+
     <div class="max-w-6xl mx-auto space-y-6">
 
         {{-- HEADER --}}
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Pengajuan Bon Gaji</h1>
-                <p class="text-gray-500 dark:text-gray-400">Lihat dan ajukan bon gaji anda di sini.</p>
-            </div>
-            <button id="btnTambah" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow transition">
-                + Tambah Bon Gaji
-            </button>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Pengajuan Bon Gaji</h1>
+            <p class="text-gray-500 dark:text-gray-400">Lihat dan ajukan bon gaji anda di sini.</p>
         </div>
 
-        {{-- RINGKASAN --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow">
-                <p class="text-gray-500 dark:text-gray-400">Total Pengajuan</p>
-                <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">5</h2>
+        {{-- RINGKASAN BON GAJI - SETENGAH LAYAR --}}
+        <div class="
+            bg-white dark:bg-gray-800
+            shadow-md rounded-2xl p-6
+            grid grid-cols-3 gap-2
+            ring-1 ring-gray-200 dark:ring-gray-700
+            max-w-md
+        ">
+            {{-- Total Bon --}}
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total Bon</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">7</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Kali</p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow">
-                <p class="text-gray-500 dark:text-gray-400">Disetujui</p>
-                <h2 class="text-2xl font-semibold text-green-500">3</h2>
+
+            {{-- Disetujui --}}
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Disetujui</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">5</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Kali</p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-5 shadow">
-                <p class="text-gray-500 dark:text-gray-400">Ditolak</p>
-                <h2 class="text-2xl font-semibold text-red-500">2</h2>
+
+            {{-- Ditolak --}}
+            <div class="text-center">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Ditolak</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">2</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Kali</p>
+            </div>
+
+            {{-- Tombol Ajukan --}}
+            <div class="col-span-3 mt-2 flex justify-center">
+                <button id="btnTambah"
+                   class="px-4 py-1.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm
+                          shadow hover:opacity-80 transition">
+                    Ajukan Bon Gaji
+                </button>
             </div>
         </div>
 
-        {{-- TABEL DATA DUMMY --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nominal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Keterangan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">05 Nov 2025</td>
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Rp 500.000</td>
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Kebutuhan mendesak</td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-600 rounded-full">Disetujui</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-blue-600 hover:underline text-sm">Detail</button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">20 Okt 2025</td>
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Rp 1.000.000</td>
-                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Biaya keluarga</td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 text-xs font-semibold bg-red-100 text-red-600 rounded-full">Ditolak</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-blue-600 hover:underline text-sm">Detail</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        {{-- HISTORY --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 ring-1 ring-gray-200 dark:ring-gray-700">
+            <h2 class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Riwayat Bon Gaji</h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
+                            <th class="px-4 py-3 text-left font-semibold">Nominal</th>
+                            <th class="px-4 py-3 text-left font-semibold">Keterangan</th>
+                            <th class="px-4 py-3 text-left font-semibold">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
+                        <tr>
+                            <td class="px-4 py-3">5 November 2025</td>
+                            <td class="px-4 py-3">Rp 500.000</td>
+                            <td class="px-4 py-3">Biaya mendesak</td>
+                            <td class="px-4 py-3 text-green-600 dark:text-green-400 font-semibold">Disetujui</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">20 Oktober 2025</td>
+                            <td class="px-4 py-3">Rp 1.000.000</td>
+                            <td class="px-4 py-3">Biaya keluarga</td>
+                            <td class="px-4 py-3 text-red-600 dark:text-red-400 font-semibold">Ditolak</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">15 Oktober 2025</td>
+                            <td class="px-4 py-3">Rp 750.000</td>
+                            <td class="px-4 py-3">Biaya hidup</td>
+                            <td class="px-4 py-3 text-yellow-600 dark:text-yellow-400 font-semibold">Menunggu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
 </div>
 
-{{-- POP-UP FORM --}}
-<div id="modalBon" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg w-full max-w-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Ajukan Bon Gaji</h2>
+{{-- MODAL FORM --}}
+<div id="modalBon" class="fixed inset-0 hidden bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6">
+        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Ajukan Bon Gaji</h2>
 
-        <form>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nominal</label>
-                    <input type="number" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan nominal">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan</label>
-                    <textarea class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Tuliskan keterangan"></textarea>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" id="btnBatal" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100">Batal</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Kirim</button>
-                </div>
+        <form class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nominal</label>
+                <input type="number"
+                    class="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700
+                           border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                    placeholder="Masukkan nominal">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan</label>
+                <textarea rows="3"
+                    class="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700
+                           border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                    placeholder="Tuliskan keterangan"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" id="btnBatal"
+                    class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100
+                           hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 rounded-lg bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+                           hover:opacity-90 transition">
+                    Kirim
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- SCRIPT MODAL --}}
 <script>
-document.getElementById('btnTambah').addEventListener('click', function() {
-    document.getElementById('modalBon').classList.remove('hidden');
-});
-document.getElementById('btnBatal').addEventListener('click', function() {
-    document.getElementById('modalBon').classList.add('hidden');
-});
+    document.getElementById('btnTambah').addEventListener('click', function() {
+        document.getElementById('modalBon').classList.remove('hidden');
+    });
+
+    document.getElementById('btnBatal').addEventListener('click', function() {
+        document.getElementById('modalBon').classList.add('hidden');
+    });
 </script>
 @endsection

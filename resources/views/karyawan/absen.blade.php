@@ -3,6 +3,13 @@
 @section('title', 'Absensi')
 
 @section('content')
+{{-- Breadcrumb --}}
+<div class="mb-6 text-base text-gray-600 dark:text-gray-400 text-right px-6">
+    <a href="{{ route('karyawan.index') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Dashboard</a>
+    <span class="mx-2">/</span>
+    <span class="text-gray-900 dark:text-gray-100">Absensi</span>
+</div>
+
 {{-- Kontainer halaman --}}
 <div class="space-y-6 transition-colors duration-300">
 

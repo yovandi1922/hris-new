@@ -5,6 +5,15 @@
 @section('content')
 <div x-data="{ openModal: false }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
+    {{-- BREADCRUMB --}}
+    <div class="mb-6 text-base text-gray-600 dark:text-gray-400 text-right">
+        <a href="{{ route('karyawan.index') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Dashboard</a>
+        <span class="mx-2">/</span>
+        <a href="{{ route('karyawan.pengajuan') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Pengajuan</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 dark:text-gray-100">Cuti dan Izin</span>
+    </div>
+
     {{-- HEADER JUDUL --}}
     <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
 
@@ -12,38 +21,35 @@
     <div class="
         bg-white dark:bg-gray-800
         shadow-md rounded-2xl p-6
-        flex flex-col md:flex-row items-center justify-between gap-8
+        grid grid-cols-3 gap-2
         ring-1 ring-gray-200 dark:ring-gray-700
+        max-w-md
     ">
         {{-- Sisa Cuti --}}
         <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Sisa Cuti</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">8</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Sisa Cuti</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">8</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Hari</p>
         </div>
-
-        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
 
         {{-- Diambil --}}
         <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Diambil</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">4</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Diambil</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">4</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Hari</p>
         </div>
-
-        <div class="hidden md:block h-10 w-px bg-gray-300 dark:bg-gray-700"></div>
 
         {{-- Ditolak --}}
         <div class="text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Ditolak</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">-</p>
-            <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Ditolak</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">-</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
         {{-- Tombol Ajukan --}}
-        <div>
+        <div class="col-span-3 mt-2 flex justify-center">
             <button @click="openModal = true"
-               class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+               class="px-4 py-1.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm
                       shadow hover:opacity-80 transition">
                 Ajukan Cuti/Izin
             </button>
@@ -139,7 +145,7 @@
                         return date.toLocaleDateString('id-ID', options);
                     }
                 }"
-                class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
                 {{-- Jenis Pengajuan --}}
                 <div>
@@ -241,7 +247,7 @@
                 </div>
 
                 {{-- Tombol --}}
-                <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+                <div class="md:col-span-2 flex justify-center gap-3 mt-2">
                     <button class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
                         Submit
                     </button>

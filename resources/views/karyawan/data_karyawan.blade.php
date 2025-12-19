@@ -4,6 +4,13 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-10 transition-colors duration-300">
+    {{-- Breadcrumb --}}
+    <div class="mb-6 text-base text-gray-600 dark:text-gray-400 text-right px-6">
+        <a href="{{ route('karyawan.index') }}" class="hover:text-gray-900 dark:hover:text-gray-100">Dashboard</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900 dark:text-gray-100">Data Karyawan</span>
+    </div>
+
     <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
 
         {{-- Header --}}

@@ -82,4 +82,9 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan/lembur', function () {
         return view('karyawan.lembur');
     })->name('karyawan.lembur');
+
+    // ================== SLIP GAJI (DUMMY) ==================
+    Route::get('/karyawan/slip-gaji', function () {
+        return view('karyawan.slip_gaji');
+    })->name('karyawan.slip_gaji');
 });

@@ -39,7 +39,11 @@
         <div>
             {{-- LOGO --}}
             <div class="flex items-center gap-3 px-6 py-6 border-b border-gray-700">
-                <img src="https://i.ibb.co/5jC2QdT/paradise-logo.png" class="w-10" alt="logo">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
                 <span class="text-xl font-semibold">paradise.corp</span>
             </div>
 
@@ -62,20 +66,22 @@
                     {{ request()->routeIs('karyawan.absen')
                         ? 'bg-gray-700 text-white'
                         : 'hover:bg-gray-700/40 text-gray-300' }}">
-                    <i class="fa-solid fa-clock text-lg"></i>
+                    <i class="fa-solid fa-circle-check text-lg"></i>
                     Absensi
                 </a>
 
                 {{-- Pengajuan --}}
-                <div x-data="{ open: {{ request()->routeIs('karyawan.pengajuan') ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ request()->routeIs('karyawan.pengajuan') || request()->routeIs('karyawan.lembur') || request()->routeIs('karyawan.bon') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition
-                            hover:bg-gray-700/40 text-gray-300">
+                            {{ request()->routeIs('karyawan.pengajuan') || request()->routeIs('karyawan.lembur') || request()->routeIs('karyawan.bon')
+                                ? 'bg-gray-700 text-white'
+                                : 'hover:bg-gray-700/40 text-gray-300' }}">
                         <span class="flex items-center gap-3">
                             <i class="fa-solid fa-folder text-lg"></i>
                             Pengajuan
                         </span>
-                        <i class="fa-solid text-xs" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        <i class="fa-solid text-xs transition-transform" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                     </button>
 
                     <div x-show="open" x-collapse class="ml-10 mt-1 space-y-1">
@@ -85,21 +91,21 @@
                             {{ request()->routeIs('karyawan.pengajuan')
                                 ? 'bg-gray-700 text-white'
                                 : 'hover:bg-gray-700/40 text-gray-300' }}">
-                            Cuti & Izin
+                            <i class="fa-solid fa-file-lines text-sm mr-2"></i>Cuti & Izin
                         </a>
 
                         <a href="{{ route('karyawan.lembur') }}" class="block px-3 py-2 rounded-md transition
                             {{ request()->routeIs('karyawan.lembur')
                                 ? 'bg-gray-700 text-white'
                                 : 'hover:bg-gray-700/40 text-gray-300' }}">
-                            Lembur
+                            <i class="fa-solid fa-clock text-sm mr-2"></i>Lembur
                         </a>
 
                         <a href="{{ route('karyawan.bon') }}" class="block px-3 py-2 rounded-md transition
                             {{ request()->routeIs('karyawan.bon')
                                 ? 'bg-gray-700 text-white'
                                 : 'hover:bg-gray-700/40 text-gray-300' }}">
-                            Bon Gaji
+                            <i class="fa-solid fa-wallet text-sm mr-2"></i>Bon Gaji
                         </a>
                     </div>
                 </div>
@@ -110,15 +116,33 @@
                     {{ request()->routeIs('karyawan.jadwal')
                         ? 'bg-gray-700 text-white'
                         : 'hover:bg-gray-700/40 text-gray-300' }}">
-                    <i class="fa-solid fa-calendar-days text-lg"></i>
+                    <i class="fa-solid fa-calendar text-lg"></i>
                     Jadwal Kerja
                 </a>
+
+                {{-- Slip Gaji --}}
+                <a href="{{ route('karyawan.slip_gaji') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition
+                    {{ request()->routeIs('karyawan.slip_gaji')
+                        ? 'bg-gray-700 text-white'
+                        : 'hover:bg-gray-700/40 text-gray-300' }}">
+                    <i class="fa-solid fa-dollar-sign text-lg"></i>
+                    Slip Gaji
+                </a>
+
+                {{-- Toggle Light/Dark Mode --}}
+                <button @click="toggleTheme"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition
+                    hover:bg-gray-700/40 text-gray-300">
+                    <i class="fa-solid fa-moon text-lg"></i>
+                    Light Mode
+                </button>
 
             </nav>
         </div>
 
         {{-- PROFILE AREA --}}
-        <div class="p-5 border-t border-gray-700 flex items-center justify-between">
+        <div class="p-5 border-t border-gray-700 space-y-4">
 
             <div class="flex items-center gap-3">
                 <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=444&color=fff"
@@ -132,18 +156,12 @@
 
             <div class="flex flex-col items-center gap-3">
 
-                {{-- Toggle theme --}}
-                <button @click="toggleTheme"
-                    class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
-                    <i class="fa-solid text-lg"
-                       :class="darkMode ? 'fa-sun text-yellow-300' : 'fa-moon text-gray-300'"></i>
-                </button>
-
                 {{-- Logout --}}
-                <form action="{{ route('logout') }}" method="POST">
+                <form action="{{ route('logout') }}" method="POST" class="w-full">
                     @csrf
-                    <button type="submit">
-                        <i class="fa-solid fa-right-from-bracket text-gray-400 hover:text-red-400 transition"></i>
+                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg bg-red-600/20 hover:bg-red-600/30 transition text-red-400 text-sm">
+                        <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                        <span>Logout</span>
                     </button>
                 </form>
 
