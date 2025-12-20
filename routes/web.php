@@ -98,6 +98,10 @@ Route::middleware(['auth', 'role:admin'])
             Route::view('/cutiizin', 'admin.approval.cutiizin')->name('cutiizin');
             Route::view('/lembur', 'admin.approval.lembur')->name('lembur');
             Route::view('/bon', 'admin.approval.bon')->name('bon');
+            Route::view('/detaillembur', 'admin.approval.detaillembur')
+        ->name('detaillembur');
+        Route::view('/detailcuti', 'admin.approval.detailcuti')
+        ->name('detailcuti');
         });
 
         // ===== PAYROLL =====

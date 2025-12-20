@@ -3,26 +3,41 @@
 @section('title', 'Data Absensi')
 
 @section('content')
-<div class="flex-1 p-6">
+<div class="flex-1 p-6 bg-gray-100 dark:bg-[#020617] min-h-screen transition-colors">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Data Absensi Karyawan</h1>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+            Data Absensi Karyawan
+        </h1>
+
         <div class="flex gap-2">
-            <!-- Search statis -->
+            <!-- Search -->
             <input type="text" placeholder="Cari NIP atau Nama..." 
-                   class="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white">
-            <!-- Tombol filter -->
+                   class="w-64 px-4 py-2 rounded-xl
+                          border border-gray-300 dark:border-gray-700
+                          bg-white dark:bg-[#111827]
+                          text-gray-800 dark:text-gray-100
+                          focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+
+            <!-- Filter Button -->
             <button onclick="toggleFilterPanel()" 
-                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg shadow transition">
+                    class="px-4 py-2 rounded-xl shadow
+                           bg-gray-200 hover:bg-gray-300
+                           dark:bg-[#1f2937] dark:hover:bg-[#374151]
+                           text-gray-700 dark:text-gray-100 transition">
                 <i class="fas fa-filter"></i> Filter
             </button>
         </div>
     </div>
 
     <div class="flex gap-6">
-        <!-- Tabel Absensi -->
-        <div class="flex-1 bg-white dark:bg-gray-800 shadow rounded-lg p-6 overflow-x-auto">
+
+        <!-- ================= TABLE ================= -->
+        <div class="flex-1 bg-white dark:bg-[#020617]
+                    border border-gray-200 dark:border-gray-800
+                    shadow-md rounded-3xl p-6 overflow-x-auto">
+
             @php
                 $absensi = [
                     ['nip'=>'001','name'=>'Ahmad Fauzi','tanggal'=>'2025-11-08','jam_masuk'=>'08:00','jam_keluar'=>'17:00','status'=>'Hadir','keterangan'=>'Tepat waktu'],
@@ -31,77 +46,110 @@
                 ];
             @endphp
 
-            <table class="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <thead class="bg-gray-100 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">NIP</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Nama</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Tanggal</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Jam Masuk</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Jam Keluar</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Status</th>
-                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Keterangan</th>
+            <table class="min-w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 dark:bg-[#111827]
+                               text-gray-700 dark:text-gray-200">
+                        <th class="px-4 py-3 text-left font-semibold">NIP</th>
+                        <th class="px-4 py-3 text-left font-semibold">Nama</th>
+                        <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
+                        <th class="px-4 py-3 text-left font-semibold">Jam Masuk</th>
+                        <th class="px-4 py-3 text-left font-semibold">Jam Keluar</th>
+                        <th class="px-4 py-3 text-left font-semibold">Status</th>
+                        <th class="px-4 py-3 text-left font-semibold">Keterangan</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach ($absensi as $item)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-600 transition cursor-pointer">
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ $item['nip'] }}</td>
+                        <tr class="border-t border-gray-200 dark:border-gray-800
+                                   hover:bg-gray-50 dark:hover:bg-[#111827]
+                                   transition cursor-pointer">
+                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['nip'] }}</td>
                             <td class="px-4 py-2 font-semibold text-gray-800 dark:text-gray-100">{{ $item['name'] }}</td>
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['tanggal'] }}</td>
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['jam_masuk'] ?? '-' }}</td>
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['jam_keluar'] ?? '-' }}</td>
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['status'] ?? '-' }}</td>
-                            <td class="px-4 py-2 text-gray-800 dark:text-gray-100">{{ $item['keterangan'] ?? '-' }}</td>
+                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $item['tanggal'] }}</td>
+                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $item['jam_masuk'] ?? '-' }}</td>
+                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $item['jam_keluar'] ?? '-' }}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-3 py-1 text-xs rounded-full
+                                    {{ $item['status'] === 'Hadir'
+                                        ? 'bg-emerald-100 text-emerald-600'
+                                        : 'bg-red-100 text-red-600' }}">
+                                    {{ $item['status'] }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">
+                                {{ $item['keterangan'] ?? '-' }}
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
-        <!-- Panel Filter -->
-        <div id="filterPanel" class="hidden w-[380px] bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 border border-gray-300 dark:border-gray-700 transition-all duration-300">
-            <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Filter Absensi</h2>
+        <!-- ================= FILTER PANEL ================= -->
+        <div id="filterPanel"
+             class="hidden w-[380px]
+                    bg-white dark:bg-[#020617]
+                    border border-gray-200 dark:border-gray-800
+                    shadow-2xl rounded-3xl p-6
+                    transition-all duration-300">
+
+            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-5">
+                Filter Absensi
+            </h2>
 
             <!-- Periode -->
-            <div class="mb-4">
-                <h3 class="font-medium text-gray-700 dark:text-gray-200 mb-2">Periode</h3>
-                <div class="space-y-2 text-gray-700 dark:text-gray-300">
-                    <label><input type="checkbox" class="mr-2">Hari ini</label>
-                    <label><input type="checkbox" class="mr-2">Kemarin</label>
-                    <label><input type="checkbox" class="mr-2">Minggu ini</label>
-                    <label><input type="checkbox" class="mr-2">Bulan ini</label>
-                    <label><input type="checkbox" class="mr-2">Rentang tanggal</label>
-                    <input type="date" class="border rounded px-2 py-1 mt-2 w-full dark:bg-gray-700 dark:text-white dark:border-gray-600">
+            <div class="mb-5">
+                <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Periode</h3>
+                <div class="space-y-2 text-gray-600 dark:text-gray-300">
+                    <label class="flex items-center gap-2"><input type="checkbox"> Hari ini</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Kemarin</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Minggu ini</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Bulan ini</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Rentang tanggal</label>
+                    <input type="date"
+                           class="w-full mt-2 px-3 py-2 rounded-xl
+                                  bg-gray-100 dark:bg-[#111827]
+                                  border border-gray-300 dark:border-gray-700
+                                  text-gray-800 dark:text-gray-100">
                 </div>
             </div>
 
             <!-- Status -->
-            <div class="mb-4">
-                <h3 class="font-medium text-gray-700 dark:text-gray-200 mb-2">Status</h3>
-                <div class="space-y-2 text-gray-700 dark:text-gray-300">
-                    <label><input type="checkbox" class="mr-2">Semua</label>
-                    <label><input type="checkbox" class="mr-2">Sudah Clock-in</label>
-                    <label><input type="checkbox" class="mr-2">Belum Clock-in</label>
+            <div class="mb-5">
+                <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Status</h3>
+                <div class="space-y-2 text-gray-600 dark:text-gray-300">
+                    <label class="flex items-center gap-2"><input type="checkbox"> Semua</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Sudah Clock-in</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Belum Clock-in</label>
                 </div>
             </div>
 
             <!-- Keterangan -->
             <div class="mb-6">
-                <h3 class="font-medium text-gray-700 dark:text-gray-200 mb-2">Keterangan</h3>
-                <div class="space-y-2 text-gray-700 dark:text-gray-300">
-                    <label><input type="checkbox" class="mr-2">Semua</label>
-                    <label><input type="checkbox" class="mr-2">Tepat waktu</label>
-                    <label><input type="checkbox" class="mr-2">Terlambat</label>
-                    <label><input type="checkbox" class="mr-2">Izin</label>
-                    <label><input type="checkbox" class="mr-2">Lembur</label>
-                    <label><input type="checkbox" class="mr-2">Belum Absen</label>
+                <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Keterangan</h3>
+                <div class="space-y-2 text-gray-600 dark:text-gray-300">
+                    <label class="flex items-center gap-2"><input type="checkbox"> Tepat waktu</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Terlambat</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Izin</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Lembur</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"> Belum Absen</label>
                 </div>
             </div>
 
-            <div class="flex justify-end space-x-3">
-                <button onclick="toggleFilterPanel()" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full hover:bg-gray-400">Tutup</button>
-                <button class="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700">Terapkan</button>
+            <!-- Action -->
+            <div class="flex justify-end gap-3">
+                <button onclick="toggleFilterPanel()"
+                        class="px-4 py-2 rounded-xl
+                               bg-gray-200 hover:bg-gray-300
+                               dark:bg-[#1f2937] dark:hover:bg-[#374151]
+                               text-gray-800 dark:text-gray-100 transition">
+                    Tutup
+                </button>
+                <button class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition">
+                    Terapkan
+                </button>
             </div>
         </div>
     </div>
