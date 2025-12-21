@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PengajuanController;
 
+
 // Root -> redirect sesuai login
 Route::get('/', function () {
     if (auth()->check()) {
@@ -36,8 +37,29 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Absensi
     Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
-});
 
+ // List semua karyawan
+    Route::get('/pengajuan', [PengajuanController::class, 'listKaryawan'])
+        ->name('pengajuan.index');
+
+    // List pengajuan berdasarkan karyawan yg diklik
+    Route::get('/pengajuan/{id}', [PengajuanController::class, 'pengajuanByKaryawan'])
+        ->name('pengajuan.detail');
+
+    // ACC
+    Route::post('/pengajuan/acc/{id}', [PengajuanController::class, 'acc'])
+        ->name('pengajuan.acc');
+
+    // Tolak
+    Route::post('/pengajuan/tolak/{id}', [PengajuanController::class, 'tolak'])
+        ->name('pengajuan.tolak');
+
+        // lembur//
+// Daftar karyawan
+ Route::get('/lembur', [AdminController::class, 'daftarKaryawan'])->name('lembur');
+    Route::get('/lembur/{id}', [AdminController::class, 'detailLembur'])->name('lembur.detail');
+
+});
 // ================== KARYAWAN ==================
 Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan', [KaryawanController::class, 'showDashboard'])->name('karyawan.index');
@@ -55,10 +77,25 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/absen/status', [KaryawanController::class, 'checkClockInStatus'])->name('absen.status');
 
     // Pengajuan
-    Route::get('/karyawan/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('karyawan.pengajuan');
-    Route::post('/karyawan/pengajuan', [PengajuanController::class, 'store'])->name('karyawan.pengajuan.store');
+    Route::get('/pengajuan', [PengajuanController::class, 'indexKaryawan'])->name('pengajuan.karyawan');
+    Route::get('/pengajuan/create', [PengajuanController::class, 'create'])->name('pengajuan.create');
+    Route::post('/pengajuan/store', [PengajuanController::class, 'store'])->name('pengajuan.store');
 
     // ================== DATA KARYAWAN & JADWAL ==================
     Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
     Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
+
+    // ================== DATA KARYAWAN & JADWAL ==================
+    Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
+    Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
+
+    // ================== BON GAJI (DUMMY) ==================
+    Route::get('/karyawan/bon', function () {
+        return view('karyawan.bon_gaji');
+    })->name('karyawan.bon');
+
+    // ================== LEMBUR (DUMMY) ==================
+    Route::get('/karyawan/lembur', function () {
+        return view('karyawan.lembur');
+    })->name('karyawan.lembur');
 });

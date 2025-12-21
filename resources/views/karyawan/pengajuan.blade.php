@@ -1,154 +1,179 @@
 @extends('layouts.karyawan')
 
-@section('title', 'Pengajuan')
+@section('title', 'Pengajuan - Cuti & Izin')
 
 @section('content')
-<div class="p-6 bg-gray-100 min-h-screen dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-  <div class="max-w-5xl mx-auto">
 
-    {{-- HEADER --}}
-    <div class="relative bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg text-white p-8 mb-8">
-      <div class="absolute right-6 top-4 opacity-20 text-7xl font-extrabold select-none">📄</div>
-      <h1 class="text-3xl font-bold mb-2">Pengajuan Karyawan</h1>
-    </div>
+<div x-data="{ openModal: false, start:'', end:'', duration:0 }" class="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-    {{-- ALERT SUCCESS --}}
-    @if(session('success'))
-      <div class="bg-green-100 text-green-800 p-3 rounded-lg mb-6 border border-green-300 shadow-sm">
-        {{ session('success') }}
-      </div>
-    @endif
 
-    {{-- FORM PENGAJUAN --}}
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-10">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b border-gray-300 dark:border-gray-700 pb-2">
-        Buat Pengajuan Baru
-      </h2>
+<h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Cuti dan Izin</h1>
 
-      <form action="{{ route('karyawan.pengajuan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
-        @csrf
-
-        <div class="grid md:grid-cols-2 gap-6">
-          {{-- Tanggal --}}
-          <div>
-            <label for="tanggal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
-            <input type="date" id="tanggal" name="tanggal" required
-              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-          </div>
-
-          {{-- Jenis Pengajuan --}}
-          <div>
-            <label for="jenis" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Pengajuan</label>
-            <select id="jenis" name="jenis" required onchange="toggleForm()"
-              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-              <option value="">-- Pilih Jenis --</option>
-              <option value="cuti">Cuti</option>
-              <option value="lembur">Lembur</option>
-              <option value="kasbon">Kasbon</option>
-            </select>
-          </div>
-        </div>
-
-        {{-- FORM KHUSUS --}}
-        <div id="formCuti" class="hidden">
-          <label for="bukti" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Upload Bukti (opsional)</label>
-          <input type="file" name="bukti"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
-        </div>
-
-        <div id="formLembur" class="hidden">
-          <label for="jam_lembur" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Jumlah Jam Lembur</label>
-          <input type="number" id="jam_lembur" name="jam_lembur" min="1"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
-        </div>
-
-        <div id="formKasbon" class="hidden">
-          <label for="nominal" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nominal Kasbon</label>
-          <input type="number" id="nominal" name="nominal"
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100">
-        </div>
-
-        {{-- Keterangan --}}
-        <div>
-          <label for="keterangan" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Keterangan</label>
-          <textarea id="keterangan" name="keterangan" rows="3" placeholder="Tuliskan alasan atau detail pengajuan..."
-            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        {{-- Tombol --}}
-        <div class="text-right">
-          <button type="submit"
-            class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 transition-all shadow">
-            Ajukan Sekarang
-          </button>
-        </div>
-      </form>
-    </div>
-
-    {{-- DAFTAR PENGAJUAN --}}
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 border-b border-gray-300 dark:border-gray-700 pb-2">
-        Daftar Pengajuan Saya
-      </h2>
-
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-200 dark:border-gray-700 rounded-lg text-sm">
-          <thead class="bg-blue-600 text-white dark:bg-gray-700">
-            <tr>
-              <th class="px-4 py-2 text-left">Tanggal</th>
-              <th class="px-4 py-2 text-left">Jenis</th>
-              <th class="px-4 py-2 text-left">Jam</th>
-              <th class="px-4 py-2 text-left">Nominal</th>
-              <th class="px-4 py-2 text-left">Keterangan</th>
-              <th class="px-4 py-2 text-left">Bukti</th>
-              <th class="px-4 py-2 text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($pengajuan as $p)
-              <tr class="text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ \Carbon\Carbon::parse($p->tanggal)->format('d M Y') }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ ucfirst($p->jenis) }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">{{ $p->jam_lembur ?? '-' }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  {{ $p->nominal ? 'Rp '.number_format($p->nominal,0,',','.') : '-' }}
-                </td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-left">{{ $p->keterangan ?? '-' }}</td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  @if($p->bukti)
-                    <a href="{{ asset('storage/'.$p->bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">Lihat</a>
-                  @else
-                    -
-                  @endif
-                </td>
-                <td class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                  <span class="px-3 py-1 rounded-full text-xs font-semibold
-                    {{ $p->status == 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                       ($p->status == 'disetujui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
-                    {{ ucfirst($p->status) }}
-                  </span>
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="7" class="px-4 py-6 text-center text-gray-500">Belum ada pengajuan.</td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
+{{-- Tombol Ajukan --}}
+<div class="mb-8">
+    <button @click="openModal = true"
+       class="px-5 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900
+              shadow hover:opacity-80 transition">
+        Ajukan Cuti/Izin
+    </button>
 </div>
 
+{{-- Tabel Riwayat Cuti --}}
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-0 ring-1 ring-gray-200 dark:ring-gray-700 overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
+                <th class="px-6 py-3 text-left font-semibold">Jenis</th>
+                <th class="px-6 py-3 text-left font-semibold">Durasi</th>
+                <th class="px-6 py-3 text-left font-semibold">Status</th>
+                <th class="px-6 py-3 text-left font-semibold">Keterangan</th>
+            </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
+            @foreach($pengajuan ?? [] as $p)
+                <tr>
+                    <td class="px-6 py-4">{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d M Y') }}
+                        @if($p->tanggal_selesai)
+                            - {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d M Y') }}
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">{{ $p->jenis }}</td>
+                    <td class="px-6 py-4">{{ $p->durasi ?? 1 }} Hari</td>
+                    <td class="px-6 py-4 font-semibold
+                        {{ $p->status == 'acc' ? 'text-green-600 dark:text-green-400' : ($p->status == 'ditolak' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400') }}">
+                        {{ ucfirst($p->status) }}
+                    </td>
+                    <td class="px-6 py-4">{{ $p->keterangan ?? '-' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+{{-- ===================== MODAL FORM ===================== --}}
+<div
+    x-show="openModal"
+    x-transition.opacity
+    class="fixed inset-0 z-50 flex items-center justify-center">
+
+    {{-- Background Overlay --}}
+    <div
+        class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"
+        @click="openModal = false">
+    </div>
+
+    {{-- Card Modal --}}
+    <div
+        x-show="openModal"
+        x-transition
+        class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-3xl p-8 z-50">
+
+        <h2 class="text-xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-100">
+            Form Pengajuan Cuti/Izin
+        </h2>
+
+        <form action="{{ route('pengajuan.store') }}" method="POST" enctype="multipart/form-data"
+              class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            @csrf
+
+            {{-- Jenis Pengajuan --}}
+            <div>
+                <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
+                <select name="jenis" required
+                        class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                               border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+                    <option value="">Pilih Pengajuan</option>
+                    <option value="Cuti Tahunan">Cuti Tahunan</option>
+                    <option value="Cuti Pribadi">Cuti Pribadi</option>
+                    <option value="Izin Sakit">Izin Sakit</option>
+                    <option value="Izin Lainnya">Izin Lainnya</option>
+                </select>
+            </div>
+
+            {{-- Keterangan --}}
+            <div>
+                <label class="font-medium">Keterangan</label>
+                <textarea name="keterangan" rows="3"
+                          class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                          placeholder="Tulis keterangan"></textarea>
+            </div>
+
+            {{-- Tanggal --}}
+            <div>
+                <label class="font-medium">Tanggal Mulai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_mulai" x-model="start" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
+
+            <div>
+                <label class="font-medium">Tanggal Selesai<span class="text-red-500">*</span></label>
+                <input type="date" name="tanggal_selesai" x-model="end" required
+                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
+
+            {{-- Durasi (hidden) --}}
+            <input type="hidden" name="durasi" :value="duration">
+
+            {{-- Lampiran --}}
+            <div class="md:col-span-2">
+                <label class="font-medium">Lampiran</label>
+                <input type="file" name="bukti"
+                       class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                              border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
+            </div>
+
+            {{-- Hitung Durasi --}}
+            <div class="md:col-span-2 mt-2">
+                <p class="text-gray-600 dark:text-gray-300">
+                    Durasi: <span x-text="start && end ? Math.floor((new Date(end) - new Date(start)) / (1000*60*60*24) + 1) : 0"></span> Hari
+                </p>
+            </div>
+
+            {{-- Tombol --}}
+            <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+                <button type="submit"
+                        class="px-6 py-2 rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+                    Submit
+                </button>
+
+                <button type="button"
+                        @click="openModal = false"
+                        class="px-6 py-2 rounded-md border border-gray-400 dark:border-gray-600
+                               text-gray-700 dark:text-gray-300">
+                    Batal
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+</div>
+
+{{-- Alpine untuk durasi --}}
+
 <script>
-function toggleForm() {
-  const jenis = document.getElementById('jenis').value;
-  ['formCuti','formLembur','formKasbon'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  if (jenis === 'cuti') document.getElementById('formCuti').classList.remove('hidden');
-  if (jenis === 'lembur') document.getElementById('formLembur').classList.remove('hidden');
-  if (jenis === 'kasbon') document.getElementById('formKasbon').classList.remove('hidden');
-}
+document.addEventListener('alpine:init', () => {
+    Alpine.data('cutiForm', () => ({
+        start: '',
+        end: '',
+        get duration() {
+            if(this.start && this.end){
+                const s = new Date(this.start);
+                const e = new Date(this.end);
+                return Math.floor((e - s)/(1000*60*60*24)) + 1;
+            }
+            return 0;
+        }
+    }));
+});
 </script>
+
 @endsection

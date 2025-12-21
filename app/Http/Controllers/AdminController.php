@@ -206,11 +206,38 @@ class AdminController extends Controller
         return redirect()->route('admin.karyawan')->with('success', 'Karyawan berhasil diperbarui');
     }
 
-    public function destroyKaryawan($id)
-    {
-        $karyawan = User::findOrFail($id);
-        $karyawan->delete();
+// Daftar semua lembur
+// Daftar semua karyawan
+public function daftarKaryawan() {
+    $karyawans = User::all();
+    return view('admin.lembur.daftar', compact('karyawans'));
+}
 
-        return redirect()->route('admin.karyawan')->with('success', 'Karyawan berhasil dihapus');
-    }
+// Detail lembur per karyawan
+public function detailLembur($id)
+{
+    $karyawan = User::findOrFail($id);
+
+    $absenKaryawan = Absen::where('user_id', $id)
+    ->whereNotNull('jam_keluar')
+    ->whereTime('jam_keluar', '>', '16:00')
+    ->get()
+        ->map(function($a){
+            $jamSelesai = \Carbon\Carbon::parse('16:00');
+            $jamKeluar = \Carbon\Carbon::parse($a->jam_keluar);
+            $lemburMenit = $jamKeluar->diffInMinutes($jamSelesai);
+
+            return [
+                'tanggal' => $a->tanggal,
+                'jam_masuk' => $a->jam_masuk,
+                'jam_keluar' => $a->jam_keluar,
+                'durasi_lembur' => $lemburMenit,
+            ];
+        });
+
+    return view('admin.lembur.detail', compact('karyawan', 'absenKaryawan'));
+}
+
+
+
 }

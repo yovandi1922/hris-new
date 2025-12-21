@@ -2,75 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengajuan;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Pengajuan;
+use App\Models\User;
 
 class PengajuanController extends Controller
 {
-    // Halaman form karyawan
-    public function create()
-    {
-        return view('karyawan.pengajuan');
-    }
-
-    // Simpan pengajuan
-    public function store(Request $request)
+    public function indexKaryawan()
 {
-    $request->validate([
-        'jenis' => 'required',
-        'tanggal' => 'required|date',
-        'keterangan' => 'nullable|string',
-        'jam_lembur' => 'nullable|integer',
-        'nominal' => 'nullable|integer',
-        'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-    ]);
+    // Ambil semua pengajuan milik user yang login
+    $pengajuan = Pengajuan::where('user_id', auth()->id())
+                          ->orderBy('created_at', 'desc')
+                          ->get();
 
-    $data = $request->all();
-
-    // upload bukti jika ada
-    if ($request->hasFile('bukti')) {
-        $file = $request->file('bukti');
-        $path = $file->store('bukti_pengajuan', 'public');
-        $data['bukti'] = $path;
-    }
-
-    // isi otomatis
-    $data['user_id'] = auth()->id();
-    $data['status'] = 'pending';
-
-    \App\Models\Pengajuan::create($data);
-
-    return redirect()->back()->with('success', 'Pengajuan berhasil diajukan!');
-}
-
-
-    // Halaman admin (list pengajuan)
-   public function indexKaryawan()
-{
-    $pengajuan = Pengajuan::where('user_id', auth()->id())->latest()->get();
     return view('karyawan.pengajuan', compact('pengajuan'));
 }
 
-public function index()
-{
-    $pengajuan = Pengajuan::latest()->get(); // semua pengajuan
-    return view('admin.pengajuan', compact('pengajuan'));
-}
+    // ADMIN – tampilkan semua karyawan
+    public function listKaryawan()
+    {
+        $karyawan = User::where('role', 'karyawan')->get();
+        return view('admin.cuti.karyawan', compact('karyawan'));
+    }
 
-
-    // Admin update status
-   public function updateStatus(Request $request, $id)
+public function store(Request $request)
 {
+    // Validasi input
     $request->validate([
-        'status' => 'required|in:pending,disetujui,ditolak'
+        'jenis' => 'required|string',
+        'keterangan' => 'nullable|string',
+        'tanggal_mulai' => 'required|date',
+        'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
     ]);
 
-    $pengajuan = Pengajuan::findOrFail($id);
-    $pengajuan->status = $request->status;
-    $pengajuan->save();
+    // Upload file jika ada
+    $path = null;
+    if($request->hasFile('bukti')){
+        $file = $request->file('bukti');
+        $path = $file->store('bukti_pengajuan', 'public');
+    }
 
-    return back()->with('success', 'Status pengajuan berhasil diperbarui');
+    // Hitung durasi
+    $start = $request->tanggal_mulai;
+    $end = $request->tanggal_selesai;
+    $duration = (strtotime($end) - strtotime($start)) / (60*60*24) + 1;
+
+    // Simpan ke database
+    Pengajuan::create([
+        'user_id' => auth()->id(),
+        'jenis' => $request->jenis,
+        'keterangan' => $request->keterangan,
+        'tanggal' => $start, // <-- wajib diisi agar tidak error
+        'tanggal_mulai' => $start,
+        'tanggal_selesai' => $end,
+        'durasi' => $duration,
+        'status' => 'pending',
+        'bukti' => $path
+    ]);
+
+    return redirect()->back()->with('success', 'Pengajuan berhasil dikirim.');
 }
 
+
+
+    // ADMIN – tampilkan pengajuan per karyawan
+    public function pengajuanByKaryawan($id)
+    {
+        $karyawan = User::findOrFail($id);
+
+        $pengajuan = Pengajuan::where('user_id', $id)
+            ->orderBy('created_at','desc')
+            ->get();
+
+        return view('admin.cuti.pengajuan', compact('karyawan','pengajuan'));
+    }
+
+    // ADMIN – ACC
+    public function acc($id)
+    {
+        $pengajuan = Pengajuan::findOrFail($id);
+        $pengajuan->status = 'acc';
+        $pengajuan->save();
+
+        return back()->with('success','Pengajuan disetujui.');
+    }
+
+    // ADMIN – Tolak
+    public function tolak($id)
+    {
+        $pengajuan = Pengajuan::findOrFail($id);
+        $pengajuan->status = 'ditolak';
+        $pengajuan->save();
+
+        return back()->with('error','Pengajuan ditolak.');
+    }
 }
