@@ -130,3 +130,4 @@ Route::middleware(['auth', 'role:karyawan'])
         Route::get('/absen', [AbsensiController::class, 'index'])->name('absen');
         Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan');
     });
+Route::view('/admin/profile', 'admin.profile');

@@ -41,17 +41,27 @@
 
         <div class="flex-1 p-6 overflow-y-auto">
             <!-- Logo -->
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-11 h-11 bg-black dark:bg-white rounded-full flex items-center justify-center shadow-lg">
-                    <svg class="w-7 h-7 text-white dark:text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                        <circle cx="9" cy="9" r="1"/>
-                        <circle cx="15" cy="9" r="1"/>
-                    </svg>
-                </div>
-                <span class="text-2xl font-bold tracking-tight">paradise.corp</span>
-            </div>
+<div class="flex items-center gap-4 mb-10">
+
+    <!-- Logo Wrapper -->
+    <div
+        class="w-20 h-20 flex items-center justify-center shrink-0 rounded-full
+               bg-black shadow-md">
+
+        <!-- Logo -->
+        <img src="{{ asset('images/logo.png') }}"
+             alt="Paradise Corp Logo"
+             class="w-18 h-18 object-contain">
+    </div>
+
+    <!-- Text -->
+    <span class="text-2xl font-bold tracking-tight leading-none text-gray-900 dark:text-gray-100">
+        paradise<span class="text-blue-600">.corp</span>
+    </span>
+</div>
+
+
+
 
             <!-- Navigasi -->
             <nav class="space-y-1" x-data="{ openApproval: false, openPayroll: false }">
@@ -95,7 +105,7 @@
                             class="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-200">
                         <div class="flex items-center gap-4">
                             <i class="fas fa-clipboard-check w-5 text-center"></i>
-                            <span>Persetujuan</span>
+                            <span>Approval</span>
                         </div>
                         <i :class="{'rotate-180': openApproval}" class="fas fa-chevron-down transition-transform duration-300 text-sm"></i>
                     </button>
@@ -119,58 +129,42 @@
                 </a>
 
                 <!-- Gaji -->
-                <div>
-                    <button @click="openPayroll = !openPayroll"
-                            class="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-200">
-                        <div class="flex items-center gap-4">
-                            <i class="fas fa-money-bill-wave w-5 text-center"></i>
-                            <span>Gaji</span>
-                        </div>
-                        <i :class="{'rotate-180': openPayroll}" class="fas fa-chevron-down transition-transform duration-300 text-sm"></i>
-                    </button>
+<div>
+    <a href="{{ route('admin.payroll.gaji') }}"
+       class="w-full flex items-center gap-4 px-4 py-3 rounded-2xl
+              text-gray-600 dark:text-gray-300
+              hover:bg-white/60 dark:hover:bg-white/10
+              transition-all duration-200">
 
-                    <div x-show="openPayroll" x-transition class="ml-12 mt-2 space-y-1">
-                        <a href="{{ route('admin.payroll.gaji') }}" class="block py-2 px-6 text-sm rounded-xl hover:bg-white/60 dark:hover:bg-white/10">Slip</a>
-                        <a href="{{ route('admin.payroll.bon') }}" class="block py-2 px-6 text-sm rounded-xl hover:bg-white/60 dark:hover:bg-white/10">Bon Gaji</a>
-                    </div>
-                </div>
-
-                <a href="{{ route('admin.rekap') }}"
-                   class="flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200
-                   @if(request()->routeIs('admin.rekap'))
-                        bg-white dark:bg-white/10 text-blue-600 shadow-md font-semibold
-                   @else
-                        text-gray-600 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10
-                   @endif">
-                    <i class="fas fa-chart-bar w-5 text-center"></i>
-                    <span>Rekap</span>
-                </a>
-
-                <a href="{{ route('admin.pengaturan') }}"
-                   class="flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200
-                   @if(request()->routeIs('admin.pengaturan'))
-                        bg-white dark:bg-white/10 text-blue-600 shadow-md font-semibold
-                   @else
-                        text-gray-600 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10
-                   @endif">
-                    <i class="fas fa-cog w-5 text-center"></i>
-                    <span>Pengaturan</span>
-                </a>
+        <i class="fas fa-money-bill-wave w-5 text-center"></i>
+        <span>Gaji</span>
+    </a>
+</div>
             </nav>
         </div>
 
         <!-- Bagian bawah – sudut bawah kanan juga melengkung -->
         <div class="p-6 border-t border-gray-200 dark:border-white/10 rounded-br-3xl">
-            <!-- User Profile -->
-            <div class="flex items-center gap-4 mb-6">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode($loggedUser->name ?? 'Guest') }}&background=2563eb&color=fff&rounded=true&size=64"
-                     alt="User Avatar"
-                     class="w-14 h-14 rounded-full shadow-lg">
-                <div>
-                    <p class="font-semibold text-gray-900 dark:text-white">Halo, {{ $loggedUser->name ?? 'Guest' }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $loggedUser->email ?? '' }}</p>
-                </div>
-            </div>
+            <!-- User Profile (Clickable) -->
+<a href="/admin/profile" class="block">
+
+    <div class="flex items-center gap-4 mb-6 cursor-pointer">
+        <img src="https://ui-avatars.com/api/?name={{ urlencode($loggedUser->name ?? 'Guest') }}&background=2563eb&color=fff&rounded=true&size=64"
+             alt="User Avatar"
+             class="w-14 h-14 rounded-full shadow-lg">
+
+        <div>
+            <p class="font-semibold text-gray-900 dark:text-white">
+                Halo, {{ $loggedUser->name ?? 'Guest' }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ $loggedUser->email ?? '' }}
+            </p>
+        </div>
+    </div>
+
+</a>
+
 
             <!-- Toggle Dark Mode -->
             <button @click="toggleDark()"
