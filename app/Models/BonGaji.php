@@ -2,21 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pengajuan extends Model
+class BonGaji extends Model
 {
-    protected $table = 'pengajuan';
+    use HasFactory;
+
+    protected $table = 'bon_gaji';
+
     protected $fillable = [
         'user_id',
-        'jenis',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'durasi',
-        'jam_lembur',
-        'nominal',
+        'jumlah',
         'keterangan',
-        'bukti',
         'status',
     ];
 

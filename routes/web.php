@@ -1,4 +1,6 @@
 <?php
+// Route download lampiran pengajuan (umum, bisa untuk admin/karyawan)
+Route::get('/download/lampiran/{filename}', [App\Http\Controllers\PengajuanController::class, 'downloadLampiran'])->name('lampiran.download');
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -28,12 +30,25 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ================== ADMIN ==================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+                    // Slip Gaji Admin
+                    Route::get('/slip-gaji', [App\Http\Controllers\Admin\SlipGajiController::class, 'index'])->name('slipgaji.index');
+                    Route::post('/slip-gaji/proses/{id}', [App\Http\Controllers\Admin\SlipGajiController::class, 'proses'])->name('slipgaji.proses');
+                    Route::post('/slip-gaji/proses-semua', [App\Http\Controllers\Admin\SlipGajiController::class, 'prosesSemua'])->name('slipgaji.prosesSemua');
+                Route::post('/bon/batal/{id}', [App\Http\Controllers\AdminBonGajiController::class, 'batal'])->name('bon.batal');
+            // Bon Gaji - Admin
+            Route::get('/bon', [App\Http\Controllers\AdminBonGajiController::class, 'index'])->name('bon.index');
+            Route::post('/bon/approve/{id}', [App\Http\Controllers\AdminBonGajiController::class, 'approve'])->name('bon.approve');
+            Route::post('/bon/reject/{id}', [App\Http\Controllers\AdminBonGajiController::class, 'reject'])->name('bon.reject');
+        // Route lembur admin hanya ke controller yang benar
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // CRUD Karyawan
     Route::get('/karyawan', [AdminController::class, 'karyawan'])->name('karyawan.index');
-    
+    Route::get('/karyawan/create', [AdminController::class, 'createKaryawan'])->name('karyawan.create');
+    Route::post('/karyawan', [AdminController::class, 'storeKaryawan'])->name('karyawan.store');
+    Route::get('/karyawan/{id}', [AdminController::class, 'getKaryawan'])->name('karyawan.detail');
+    Route::put('/karyawan/{id}', [AdminController::class, 'updateKaryawan'])->name('karyawan.update');
 
     // Absensi
     Route::get('/absen', [AdminController::class, 'absensi'])->name('absen');
@@ -46,6 +61,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pengajuan/{id}', [PengajuanController::class, 'pengajuanByKaryawan'])
         ->name('pengajuan.detail');
 
+    // Detail cuti approval
+    Route::get('/approval/detailcuti', [AdminController::class, 'detailCuti'])->name('approval.detailcuti');
+
     // ACC
     Route::post('/pengajuan/acc/{id}', [PengajuanController::class, 'acc'])
         ->name('pengajuan.acc');
@@ -54,11 +72,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/pengajuan/tolak/{id}', [PengajuanController::class, 'tolak'])
         ->name('pengajuan.tolak');
 
-        // lembur//
-// Daftar karyawan
- Route::get('/lembur', [AdminController::class, 'daftarKaryawan'])->name('lembur');
-    Route::get('/lembur/{id}', [AdminController::class, 'detailLembur'])->name('lembur.detail');
+    // Batalkan
+    Route::post('/pengajuan/batal/{id}', [PengajuanController::class, 'batal'])
+        ->name('pengajuan.batal');
 
+    // Lembur - Admin
+    Route::get('/lembur', [App\Http\Controllers\AdminLemburController::class, 'index'])->name('lembur.index');
+    Route::post('/lembur/setujui/{id}', [App\Http\Controllers\AdminLemburController::class, 'approve'])->name('lembur.setujui');
+    Route::post('/lembur/tolak/{id}', [App\Http\Controllers\AdminLemburController::class, 'reject'])->name('lembur.tolak');
+    Route::post('/lembur/batal/{id}', [App\Http\Controllers\AdminLemburController::class, 'batal'])->name('lembur.batal');
 });
 // ================== KARYAWAN ==================
 Route::middleware(['auth', 'role:karyawan'])->group(function () {
@@ -89,13 +111,11 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::get('/karyawan/data', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.data');
     Route::get('/karyawan/jadwal', [KaryawanController::class, 'dataKaryawan'])->name('karyawan.jadwal');
 
-    // ================== BON GAJI (DUMMY) ==================
-    Route::get('/karyawan/bon', function () {
-        return view('karyawan.bon_gaji');
-    })->name('karyawan.bon');
+    // ================== BON GAJI ==================
+    Route::get('/karyawan/bon', [App\Http\Controllers\BonGajiController::class, 'index'])->name('karyawan.bon');
+    Route::post('/karyawan/bon', [App\Http\Controllers\BonGajiController::class, 'store'])->name('karyawan.bon.store');
 
     // ================== LEMBUR (DUMMY) ==================
-    Route::get('/karyawan/lembur', function () {
-        return view('karyawan.lembur');
-    })->name('karyawan.lembur');
+    Route::get('/karyawan/lembur', [App\Http\Controllers\LemburController::class, 'indexKaryawan'])->name('karyawan.lembur');
+    Route::post('/karyawan/lembur', [App\Http\Controllers\LemburController::class, 'store'])->name('lembur.store');
 });

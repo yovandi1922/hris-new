@@ -1,0 +1,19 @@
+/* Custom style to ensure filter sidebar scroll is always visible and header is fixed */
+#filterSidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+#filterSidebar .sticky {
+  top: 0;
+  z-index: 10;
+  background: inherit;
+}
+#filterSidebar form {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: 16px; /* lebih besar agar tidak tertutup header */
+  max-height: calc(100vh - 72px); /* sesuaikan jika header berubah */
+  box-sizing: border-box;
+}

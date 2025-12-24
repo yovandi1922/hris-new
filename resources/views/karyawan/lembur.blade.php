@@ -45,25 +45,25 @@
 
                 <div>
                     <p class="text-gray-500 dark:text-gray-400">Total Lembur</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">12</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $totalJam }}</p>
                     <span class="text-sm text-gray-500 dark:text-gray-400">Jam</span>
                 </div>
 
                 <div>
                     <p class="text-gray-500 dark:text-gray-400">Total Pengajuan</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">4</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $totalPengajuan }}</p>
                     <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
                 </div>
 
                 <div>
                     <p class="text-gray-500 dark:text-gray-400">Disetujui</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">3</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $totalDisetujui }}</p>
                     <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
                 </div>
 
                 <div>
                     <p class="text-gray-500 dark:text-gray-400">Ditolak</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">1</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $totalDitolak }}</p>
                     <span class="text-sm text-gray-500 dark:text-gray-400">Kali</span>
                 </div>
 
@@ -81,16 +81,10 @@
         </div>
 
         {{-- RIWAYAT --}}
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-8
-                    border border-gray-200 dark:border-gray-700">
-
-            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
-                Riwayat Lembur
-            </h2>
-
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-6">Riwayat Lembur</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-
                     <thead>
                         <tr class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             <th class="py-3 px-4 font-semibold">Tanggal</th>
@@ -101,41 +95,30 @@
                             <th class="py-3 px-4 font-semibold">Status</th>
                         </tr>
                     </thead>
-
                     <tbody class="text-gray-700 dark:text-gray-300">
-
+                        @forelse($riwayatLembur as $item)
                         <tr class="border-b border-gray-300 dark:border-gray-700">
-                            <td class="py-3 px-4">2 September</td>
-                            <td class="py-3 px-4">16.00 WIB</td>
-                            <td class="py-3 px-4">18.12 WIB</td>
-                            <td class="py-3 px-4">2 Jam</td>
-                            <td class="py-3 px-4">Otomatis</td>
-                            <td class="py-3 px-4 text-green-600 font-semibold">Disetujui</td>
+                            <td class="py-3 px-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                            <td class="py-3 px-4">{{ $item->jam_mulai }}</td>
+                            <td class="py-3 px-4">{{ $item->jam_selesai }}</td>
+                            <td class="py-3 px-4">{{ \App\Helpers\LemburHelper::hitungJam($item->jam_mulai, $item->jam_selesai) }}</td>
+                            <td class="py-3 px-4">{{ $item->keterangan }}</td>
+                            <td class="py-3 px-4">
+                                @if($item->status == 'Disetujui')
+                                    <span class="px-3 py-1 rounded-full bg-green-700 text-white text-sm">Disetujui</span>
+                                @elseif($item->status == 'Ditolak')
+                                    <span class="px-3 py-1 rounded-full bg-red-700 text-white text-sm">Ditolak</span>
+                                @else
+                                    <span class="px-3 py-1 rounded-full bg-yellow-600 text-white text-sm">Menunggu</span>
+                                @endif
+                            </td>
                         </tr>
-
-                        <tr class="border-b border-gray-300 dark:border-gray-700">
-                            <td class="py-3 px-4">29 Agustus</td>
-                            <td class="py-3 px-4">16.00 WIB</td>
-                            <td class="py-3 px-4">17.00 WIB</td>
-                            <td class="py-3 px-4">1 Jam</td>
-                            <td class="py-3 px-4">-</td>
-                            <td class="py-3 px-4 text-red-500 font-semibold">Ditolak</td>
-                        </tr>
-
-                        <tr>
-                            <td class="py-3 px-4">22 Agustus</td>
-                            <td class="py-3 px-4">16.00 WIB</td>
-                            <td class="py-3 px-4">19.09 WIB</td>
-                            <td class="py-3 px-4">3 Jam</td>
-                            <td class="py-3 px-4">Laporan Mingguan</td>
-                            <td class="py-3 px-4 text-green-600 font-semibold">Disetujui</td>
-                        </tr>
-
+                        @empty
+                        <tr><td colspan="6" class="py-3 px-4 text-center">Belum ada pengajuan lembur.</td></tr>
+                        @endforelse
                     </tbody>
-
                 </table>
             </div>
-
         </div>
 
     </div>
@@ -152,7 +135,7 @@
                 Form Pengajuan Lembur
             </h2>
 
-            <form method="POST" action="#" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="{{ route('lembur.store') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -194,7 +177,7 @@
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
                                 <p class="text-sm mb-1">Mulai</p>
-                                <input type="time" x-model="startTime" @change="hitung()"
+                                <input type="time" name="jam_mulai" x-model="startTime" @change="hitung()"
                                    class="w-full px-3 py-2 border rounded-lg
                                           bg-white dark:bg-gray-900
                                           border-gray-300 dark:border-gray-600
@@ -203,7 +186,7 @@
 
                             <div class="flex-1">
                                 <p class="text-sm mb-1">Selesai</p>
-                                <input type="time" x-model="endTime" @change="hitung()"
+                                <input type="time" name="jam_selesai" x-model="endTime" @change="hitung()"
                                    class="w-full px-3 py-2 border rounded-lg
                                           bg-white dark:bg-gray-900
                                           border-gray-300 dark:border-gray-600

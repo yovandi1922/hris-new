@@ -8,6 +8,10 @@
 <form action="{{ route('admin.karyawan.store') }}" method="POST" class="space-y-4 bg-white p-4 rounded shadow">
     @csrf
     <div>
+        <label class="block mb-1">NIP</label>
+        <input type="text" name="nip" class="w-full border p-2 rounded bg-gray-100" value="{{ isset($nipBaru) ? $nipBaru : old('nip') }}" readonly required maxlength="3" minlength="3">
+    </div>
+    <div>
         <label class="block mb-1">Nama</label>
         <input type="text" name="name" class="w-full border p-2 rounded" required>
     </div>

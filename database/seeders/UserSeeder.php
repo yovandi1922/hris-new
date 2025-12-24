@@ -17,6 +17,8 @@ class UserSeeder extends Seeder
             ['email' => 'admin@gmail.com'], // cari berdasarkan email
             [
                 'name' => 'Admin',
+                'nip' => '001',
+                'jabatan' => 'Administrator',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ]
@@ -27,6 +29,8 @@ class UserSeeder extends Seeder
             ['email' => 'user@gmail.com'],
             [
                 'name' => 'yovandi',
+                'nip' => '002',
+                'jabatan' => 'Staff Keuangan',
                 'password' => Hash::make('karyawan123'),
                 'role' => 'karyawan',
             ]

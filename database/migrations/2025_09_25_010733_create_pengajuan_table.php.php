@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('bukti')->nullable(); // upload bukti
             $table->text('keterangan')->nullable(); // tambahan keterangan
             
-            // Status pengajuan (pending, acc, ditolak)
-            $table->enum('status', ['pending', 'acc', 'ditolak'])->default('pending');
+            // Status pengajuan (pending, acc, ditolak, batal)
+            $table->enum('status', ['pending', 'acc', 'ditolak', 'batal'])->default('pending');
 
             $table->timestamps();
         });

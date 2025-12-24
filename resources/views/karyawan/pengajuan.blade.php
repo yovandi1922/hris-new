@@ -18,7 +18,7 @@
         {{-- Sisa Cuti --}}
         <div class="text-center">
             <p class="text-sm text-gray-500 dark:text-gray-400">Sisa Cuti</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">8</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">{{ $sisaCuti ?? '-' }}</p>
             <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
@@ -27,7 +27,7 @@
         {{-- Diambil --}}
         <div class="text-center">
             <p class="text-sm text-gray-500 dark:text-gray-400">Diambil</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">4</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">{{ $cutiDiambil ?? '-' }}</p>
             <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
@@ -36,7 +36,7 @@
         {{-- Ditolak --}}
         <div class="text-center">
             <p class="text-sm text-gray-500 dark:text-gray-400">Ditolak</p>
-            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">-</p>
+            <p class="text-4xl font-bold mt-1 text-gray-800 dark:text-gray-100">{{ $cutiDitolak ?? '-' }}</p>
             <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Hari</p>
         </div>
 
@@ -76,29 +76,32 @@
 
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
 
-                    <tr>
-                        <td class="px-6 py-4">10–12 September</td>
-                        <td class="px-6 py-4">Cuti Tahunan</td>
-                        <td class="px-6 py-4">2 Hari</td>
-                        <td class="px-6 py-4 text-green-600 dark:text-green-400 font-semibold">Disetujui</td>
-                        <td class="px-6 py-4">-</td>
-                    </tr>
-
-                    <tr>
-                        <td class="px-6 py-4">29 Agustus</td>
-                        <td class="px-6 py-4">Izin Sakit</td>
-                        <td class="px-6 py-4">1 Hari</td>
-                        <td class="px-6 py-4 text-yellow-600 dark:text-yellow-400 font-semibold">Menunggu</td>
-                        <td class="px-6 py-4">Surat RS</td>
-                    </tr>
-
-                    <tr>
-                        <td class="px-6 py-4">5 Agustus</td>
-                        <td class="px-6 py-4">Cuti Pribadi</td>
-                        <td class="px-6 py-4">1 Hari</td>
-                        <td class="px-6 py-4 text-red-600 dark:text-red-400 font-semibold">Ditolak</td>
-                        <td class="px-6 py-4">Tidak Valid</td>
-                    </tr>
+                    @forelse($pengajuan as $item)
+                        <tr>
+                            <td class="px-6 py-4">
+                                @if($item->tanggal_mulai == $item->tanggal_selesai)
+                                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}
+                                @else
+                                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">{{ $item->jenis }}</td>
+                            <td class="px-6 py-4">{{ $item->durasi }} Hari</td>
+                            <td class="px-6 py-4 font-semibold
+                                @if($item->status == 'acc') text-green-600 dark:text-green-400
+                                @elseif($item->status == 'pending') text-yellow-600 dark:text-yellow-400
+                                @else text-red-600 dark:text-red-400 @endif">
+                                @if($item->status == 'acc') Disetujui
+                                @elseif($item->status == 'pending') Menunggu
+                                @else Ditolak @endif
+                            </td>
+                            <td class="px-6 py-4">{{ $item->keterangan ?? '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Belum ada data pengajuan.</td>
+                        </tr>
+                    @endforelse
 
                 </tbody>
             </table>
@@ -139,26 +142,30 @@
                         return date.toLocaleDateString('id-ID', options);
                     }
                 }"
+                method="POST"
+                action="{{ route('pengajuan.store') }}"
+                enctype="multipart/form-data"
                 class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                @csrf
 
                 {{-- Jenis Pengajuan --}}
                 <div>
                     <label class="font-medium">Jenis Pengajuan<span class="text-red-500">*</span></label>
-                    <select class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                    <select name="jenis" required class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
                                    border-gray-300 dark:border-gray-600
                                    text-gray-800 dark:text-gray-100">
-                        <option>Pilih Pengajuan</option>
-                        <option>Cuti Tahunan</option>
-                        <option>Cuti Pribadi</option>
-                        <option>Izin Sakit</option>
-                        <option>Izin Lainnya</option>
+                        <option value="">Pilih Pengajuan</option>
+                        <option value="Cuti Tahunan">Cuti Tahunan</option>
+                        <option value="Cuti Pribadi">Cuti Pribadi</option>
+                        <option value="Izin Sakit">Izin Sakit</option>
+                        <option value="Izin Lainnya">Izin Lainnya</option>
                     </select>
                 </div>
 
                 {{-- Keterangan --}}
                 <div>
                     <label class="font-medium">Keterangan<span class="text-red-500">*</span></label>
-                    <textarea rows="3" class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                    <textarea name="keterangan" rows="3" required class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
                                        border-gray-300 dark:border-gray-600
                                        text-gray-800 dark:text-gray-100"
                               placeholder="Tulis keterangan"></textarea>
@@ -189,17 +196,17 @@
                             {{-- Tgl Mulai --}}
                             <div>
                                 <p class="font-semibold mb-2">Tanggal Mulai</p>
-                                <input type="date" x-model="start"
-                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                              border-gray-300 dark:border-gray-600">
+                                    <input type="date" x-model="start" name="tanggal_mulai" required
+                                        class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                            border-gray-300 dark:border-gray-600">
                             </div>
 
                             {{-- Tgl Selesai --}}
                             <div>
                                 <p class="font-semibold mb-2">Tanggal Selesai</p>
-                                <input type="date" x-model="end"
-                                       class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
-                                              border-gray-300 dark:border-gray-600">
+                                    <input type="date" x-model="end" name="tanggal_selesai" required
+                                        class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                                            border-gray-300 dark:border-gray-600">
                             </div>
                         </div>
 
@@ -228,8 +235,8 @@
                 {{-- Lampiran --}}
                 <div>
                     <label class="font-medium">Lampiran</label>
-                    <input type="file"
-                           class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
+                          <input type="file" name="bukti"
+                              class="w-full mt-1 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700
                                   border-gray-300 dark:border-gray-600
                                   text-gray-800 dark:text-gray-100">
                 </div>
