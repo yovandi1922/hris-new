@@ -22,45 +22,86 @@
     <!-- DATA -->
     <div class="flex-1 space-y-10">
 
-        <!-- DATA UTAMA -->
         <div class="grid grid-cols-3 gap-10">
 
-            <!-- Nama -->
-            <div class="space-y-2">
+            <!-- NAMA -->
+            <div x-data="{ edit: false, value: 'Agus Yulianto' }" class="space-y-2">
                 <p class="text-gray-500">Nama</p>
-                <div class="flex items-center justify-between gap-4">
-                    <p class="text-xl font-semibold">Agus Yulianto</p>
-                    <button class="text-blue-600 font-medium hover:underline">
-                        Ubah
-                    </button>
-                </div>
+
+                <template x-if="!edit">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-semibold" x-text="value"></p>
+                        <button @click="edit = true" class="text-blue-600 hover:underline">Ubah</button>
+                    </div>
+                </template>
+
+                <template x-if="edit">
+                    <div class="space-y-2">
+                        <input type="text" x-model="value"
+                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-200">
+                        <div class="flex gap-3">
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
+                        </div>
+                    </div>
+                </template>
             </div>
 
-            <!-- No HP -->
-            <div class="space-y-2">
+            <!-- NO HP -->
+            <div x-data="{ edit: false, value: '(+62) 812 3456 7890' }" class="space-y-2">
                 <p class="text-gray-500">Nomor Handphone</p>
-                <div class="flex items-center justify-between gap-4">
-                    <p class="text-xl font-semibold">(+62) 812 3456 7890</p>
-                    <button class="text-blue-600 font-medium hover:underline">
-                        Ubah
-                    </button>
-                </div>
+
+                <template x-if="!edit">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-semibold" x-text="value"></p>
+                        <button @click="edit = true" class="text-blue-600 hover:underline">Ubah</button>
+                    </div>
+                </template>
+
+                <template x-if="edit">
+                    <div class="space-y-2">
+                        <input type="text" x-model="value"
+                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-200">
+                        <div class="flex gap-3">
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
+                        </div>
+                    </div>
+                </template>
             </div>
 
-            <!-- Email -->
-            <div class="space-y-2">
+            <!-- EMAIL -->
+            <div x-data="{ edit: false, value: 'agus@gmail.com' }" class="space-y-2">
                 <p class="text-gray-500">E-mail</p>
-                <div class="flex items-center justify-between gap-4">
-                    <p class="text-xl font-semibold">agus@gmail.com</p>
-                    <button class="text-blue-600 font-medium hover:underline">
-                        Ubah
-                    </button>
-                </div>
+
+                <template x-if="!edit">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-semibold" x-text="value"></p>
+                        <button @click="edit = true" class="text-blue-600 hover:underline">Ubah</button>
+                    </div>
+                </template>
+
+                <template x-if="edit">
+                    <div class="space-y-2">
+                        <input type="email" x-model="value"
+                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-200">
+                        <div class="flex gap-3">
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                            <button @click="edit = false"
+                                    class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
+                        </div>
+                    </div>
+                </template>
             </div>
 
         </div>
 
-        <!-- Jabatan -->
+        <!-- JABATAN -->
         <div class="space-y-2">
             <p class="text-gray-500">Jabatan</p>
             <p class="text-xl font-semibold">Administrator</p>
@@ -72,19 +113,35 @@
 
             <div class="grid grid-cols-2 gap-10">
 
-                <div class="space-y-2">
+                <div>
                     <p class="text-gray-500">Terakhir Login</p>
                     <p class="font-semibold">10 September 2025, 08 : 32</p>
                 </div>
 
-                <div class="space-y-2">
+                <!-- PASSWORD -->
+                <div x-data="{ edit: false }" class="space-y-2">
                     <p class="text-gray-500">Password</p>
-                    <div class="flex items-center justify-between gap-4">
-                        <p class="font-semibold tracking-widest">************</p>
-                        <button class="text-blue-600 font-medium hover:underline">
-                            Ubah
-                        </button>
-                    </div>
+
+                    <template x-if="!edit">
+                        <div class="flex justify-between items-center">
+                            <p class="font-semibold tracking-widest">************</p>
+                            <button @click="edit = true" class="text-blue-600 hover:underline">Ubah</button>
+                        </div>
+                    </template>
+
+                    <template x-if="edit">
+                        <div class="space-y-2">
+                            <input type="password"
+                                   placeholder="Password baru"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-200">
+                            <div class="flex gap-3">
+                                <button @click="edit = false"
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                                <button @click="edit = false"
+                                        class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
             </div>

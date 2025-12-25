@@ -43,16 +43,20 @@
             <!-- Logo -->
 <div class="flex items-center gap-4 mb-10">
 
-    <!-- Logo Wrapper -->
-    <div
-        class="w-20 h-20 flex items-center justify-center shrink-0 rounded-full
-               bg-black shadow-md">
+    <!-- Logo Wrapper (TANPA BACKGROUND) -->
+<div class="w-20 h-20 flex items-center justify-center shrink-0">
 
-        <!-- Logo -->
-        <img src="{{ asset('images/logo.png') }}"
-             alt="Paradise Corp Logo"
-             class="w-18 h-18 object-contain">
-    </div>
+    <!-- Logo Light Mode -->
+    <img src="{{ asset('images/logo1.png') }}"
+         alt="Paradise Corp Logo Light"
+         class="w-18 h-18 object-contain block dark:hidden">
+
+    <!-- Logo Dark Mode -->
+    <img src="{{ asset('images/logo.png') }}"
+         alt="Paradise Corp Logo Dark"
+         class="w-18 h-18 object-contain hidden dark:block">
+</div>
+
 
     <!-- Text -->
     <span class="text-2xl font-bold tracking-tight leading-none text-gray-900 dark:text-gray-100">
