@@ -32,6 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
                     // Slip Gaji Admin
                     Route::get('/slip-gaji', [App\Http\Controllers\Admin\SlipGajiController::class, 'index'])->name('slipgaji.index');
+                    Route::get('/slip-gaji/detail/{id}', [App\Http\Controllers\Admin\SlipGajiController::class, 'detail'])->name('slipgaji.detail');
                     Route::post('/slip-gaji/proses/{id}', [App\Http\Controllers\Admin\SlipGajiController::class, 'proses'])->name('slipgaji.proses');
                     Route::post('/slip-gaji/proses-semua', [App\Http\Controllers\Admin\SlipGajiController::class, 'prosesSemua'])->name('slipgaji.prosesSemua');
                 Route::post('/bon/batal/{id}', [App\Http\Controllers\AdminBonGajiController::class, 'batal'])->name('bon.batal');
@@ -118,4 +119,7 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     // ================== LEMBUR (DUMMY) ==================
     Route::get('/karyawan/lembur', [App\Http\Controllers\LemburController::class, 'indexKaryawan'])->name('karyawan.lembur');
     Route::post('/karyawan/lembur', [App\Http\Controllers\LemburController::class, 'store'])->name('lembur.store');
+
+    // ================== GAJI ==================
+    Route::get('/karyawan/gaji', [KaryawanController::class, 'showGaji'])->name('karyawan.gaji');
 });

@@ -1,24 +1,33 @@
 <?php
+
 namespace Database\Factories;
+
 use App\Models\Karyawan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class KaryawanFactory extends Factory
 {
     protected $model = Karyawan::class;
-    public function definition()
+
+    public function definition(): array
     {
-        static $nip = 100;
-        $jabatan = $this->faker->randomElement([
-            'Staff Administrasi','Staff Keuangan','HR Staff','IT Support','Staff Operasional'
-        ]);
-        $gaji = [3200000, 3800000, 4000000, 4200000, 3100000, 3700000, 3000000][array_rand([0,1,2,3,4,5,6])];
+        $jabatanGaji = [
+            'Staff Administrasi' => 3500000,
+            'Staff Keuangan' => 4200000,
+            'HR Staff' => 4000000,
+            'IT Support' => 4500000,
+            'Staff Operasional' => 3800000,
+            'Marketing' => 3900000,
+            'Customer Service' => 3600000,
+        ];
+
+        $jabatan = $this->faker->randomElement(array_keys($jabatanGaji));
+
         return [
-            'nip' => $nip++,
+            'nip' => 'KRY'.str_pad(fake()->unique()->numberBetween(1000, 9999), 5, '0', STR_PAD_LEFT),
             'nama' => $this->faker->name(),
             'jabatan' => $jabatan,
-            'gaji_pokok' => $gaji,
-            // 'user_id' => \App\Models\User::factory(), // aktifkan jika ada kolom user_id di tabel karyawans
+            'gaji_pokok' => $jabatanGaji[$jabatan],
         ];
     }
 }

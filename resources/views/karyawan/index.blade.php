@@ -33,10 +33,34 @@
         <div class="bg-white dark:bg-gray-950 shadow-md rounded-2xl p-6 flex flex-col justify-between transition">
             <div>
                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Gaji Bulan Ini</h3>
-                <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">Rp 4.500.000</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sudah ditransfer (2 Oktober 2025)</p>
+                @php
+                    $karyawan = \App\Models\Karyawan::where('nama', auth()->user()->name)->first();
+                    $slipGajiBulanIni = null;
+                    $totalGajiBulanIni = 0;
+                    if ($karyawan) {
+                        $slipGajiBulanIni = \App\Models\SlipGaji::where('karyawan_id', $karyawan->id)
+                            ->where('bulan', date('n'))
+                            ->where('tahun', date('Y'))
+                            ->first();
+                        $totalGajiBulanIni = $slipGajiBulanIni ? $slipGajiBulanIni->total_gaji : 0;
+                    }
+                @endphp
+                <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    @if($slipGajiBulanIni)
+                        Rp {{ number_format($totalGajiBulanIni, 0, ',', '.') }}
+                    @else
+                        <span class="text-gray-500 text-2xl">Belum Diproses</span>
+                    @endif
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    @if($slipGajiBulanIni && $slipGajiBulanIni->status == 'dibayar')
+                        Sudah ditransfer ({{ $slipGajiBulanIni->updated_at->format('d F Y') }})
+                    @else
+                        Menunggu proses penggajian
+                    @endif
+                </p>
             </div>
-            <a href="#" class="mt-4 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg text-sm font-semibold text-center hover:opacity-90 transition">
+            <a href="{{ route('karyawan.gaji') }}" class="mt-4 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg text-sm font-semibold text-center hover:opacity-90 transition">
                 Lihat Slip Gaji
             </a>
         </div>

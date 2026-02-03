@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Factories;
 
 use App\Models\SlipGaji;
@@ -8,11 +9,16 @@ class SlipGajiFactory extends Factory
 {
     protected $model = SlipGaji::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
-            // 'karyawan_id' => \App\Models\Karyawan::factory(), // aktifkan jika ingin relasi otomatis
-            // Kolom lain diisi di seeder sesuai logic slip gaji
+            'bulan' => now()->month,
+            'tahun' => now()->year,
+            'total_lembur_jam' => 0,
+            'total_telat_jam' => 0,
+            'potongan' => 0,
+            'total_gaji' => 0,
+            'status' => 'dibayar',
         ];
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Absen;
+use App\Models\Karyawan;
+use App\Models\SlipGaji;
 use Carbon\Carbon;
 
 class KaryawanController extends Controller
@@ -180,19 +182,43 @@ class KaryawanController extends Controller
 
 
     private function hitungJarak($lat1, $lon1, $lat2, $lon2)
-{
-    $R = 6371; // radius bumi (km)
-    $dLat = deg2rad($lat2 - $lat1);
-    $dLon = deg2rad($lon2 - $lon1);
-    $a = sin($dLat/2) * sin($dLat/2) +
-         cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-         sin($dLon/2) * sin($dLon/2);
-    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
-    $distance = $R * $c; // hasil dalam km
-    return $distance;
+    {
+        $R = 6371; // radius bumi (km)
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat/2) * sin($dLat/2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLon/2) * sin($dLon/2);
+        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+        $distance = $R * $c; // hasil dalam km
+        return $distance;
+    }
+
+    // Halaman Gaji Karyawan
+    public function showGaji(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Cari karyawan berdasarkan NAMA user yang login
+        $karyawan = Karyawan::where('nama', $user->name)->first();
+
+        $bulan = (int) $request->input('bulan', date('n'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+
+        // Ambil slip gaji untuk karyawan ini
+        $slipGaji = null;
+        if ($karyawan) {
+            $slipGaji = SlipGaji::where('karyawan_id', $karyawan->id)
+                ->where('bulan', $bulan)
+                ->where('tahun', $tahun)
+                ->first();
+        }
+
+        return view('karyawan.gaji', [
+            'karyawan' => $karyawan,
+            'slipGaji' => $slipGaji,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+        ]);
+    }
 }
-
-
-}
-
-

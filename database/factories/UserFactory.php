@@ -24,10 +24,15 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'nip' => (string) fake()->unique()->numberBetween(100, 999), // Generate unique NIP 100-999
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'karyawan',
+            'phone' => fake()->phoneNumber(),
+            'start_date' => fake()->dateTimeBetween('-3 years', '-1 year')->format('Y-m-d'),
+            'work_status' => 'Aktif',
             'remember_token' => Str::random(10),
         ];
     }

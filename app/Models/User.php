@@ -11,13 +11,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // Relasi ke karyawan (jika ada 1 user = 1 karyawan)
-    public function karyawan()
-    {
-        return $this->hasOne(\App\Models\Karyawan::class, 'nama', 'name'); // atau sesuaikan jika ada kolom user_id
-    }
-    use HasFactory, Notifiable;
-
     // Tabel yang digunakan
     protected $table = 'users';
 
@@ -38,5 +31,24 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    // Relasi ke karyawan (1 user = 1 karyawan berdasarkan nama)
+    public function karyawan()
+    {
+        return $this->hasOne(\App\Models\Karyawan::class, 'nama', 'name');
+    }
+
+    // Relasi ke slip gaji melalui karyawan
+    public function slipGajis()
+    {
+        return $this->hasManyThrough(
+            \App\Models\SlipGaji::class,
+            \App\Models\Karyawan::class,
+            'nama', // Foreign key di karyawans
+            'karyawan_id', // Foreign key di slip_gajis
+            'name', // Local key di users
+            'id' // Local key di karyawans
+        );
+    }
 }
 
