@@ -20,5 +20,11 @@ class Absen extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Relasi ke karyawan via NIP (pastikan kolom nip ada di absensi dan users)
+    public function karyawanByNip()
+    {
+        return $this->belongsTo(User::class, 'nip', 'nip');
+    }
 }
 

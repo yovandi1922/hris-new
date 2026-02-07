@@ -82,23 +82,43 @@
                 $warnaKeluar = 'text-gray-500';
 
                 if ($jamKeluar) {
-                    if ($jamKeluar->format('H:i') === '16:00') {
+                    $jamBatasL = $jamKeluar->copy()->setTime(16,0,0);
+                    if ($jamKeluar->lte($jamBatasL)) {
                         $ketKeluar = 'Selesai';
                         $warnaKeluar = 'text-green-500';
-                    } elseif ($jamKeluar->greaterThan(\Carbon\Carbon::parse('16:00'))) {
-                        $menit = $jamKeluar->diffInMinutes(\Carbon\Carbon::parse('16:00'));
-                        $ketKeluar = 'Lembur ' . $menit . ' menit';
-                        $warnaKeluar = 'text-yellow-500';
+                    } else {
+                        $lemburMenit = $jamKeluar->diffInMinutes($jamBatasL);
+                        $lemburJam = floor($lemburMenit / 60);
+                        if ($lemburJam >= 1) {
+                            $ketKeluar = 'Lembur ' . $lemburJam . ' jam';
+                            $warnaKeluar = 'text-yellow-500';
+                        } else {
+                            $ketKeluar = 'Selesai';
+                            $warnaKeluar = 'text-green-500';
+                        }
                     }
                 }
             @endphp
 
-            <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
+                <span class="font-medium text-gray-800 dark:text-gray-100">Clock-out</span>
 
-            <span class="font-bold text-gray-800 dark:text-gray-100">
-                {{ $jamKeluar ? $jamKeluar->format('H:i') : '-' }}
-                <span class="ml-2 {{ $warnaKeluar }} text-sm">({{ $ketKeluar }})</span>
-            </span>
+                <span class="font-bold text-gray-800 dark:text-gray-100">
+                    {{ $jamKeluar ? $jamKeluar->format('H:i') : '-' }}
+                    <span class="ml-2 {{ $warnaKeluar }} text-sm">({{ $ketKeluar }})
+                        @if($absenHariIni && $absenHariIni->jam_keluar)
+                            @php
+                                $jamKeluarL = \Carbon\Carbon::parse($absenHariIni->jam_keluar);
+                                $jamBatasL = $jamKeluarL->copy()->setTime(16,0,0);
+                                $lemburMenit = $jamKeluarL->gt($jamBatasL) ? $jamBatasL->diffInMinutes($jamKeluarL) : 0;
+                                $lemburJam = floor($lemburMenit / 60);
+                            @endphp
+                            {{-- DEBUG OUTPUT --}}
+                            @if($lemburJam >= 1)
+                                &nbsp;|&nbsp;<span class="text-yellow-500">Lembur {{ $lemburJam }} jam</span>
+                            @endif
+                        @endif
+                    </span>
+                </span>
         </li>
 
     </ul>
@@ -127,16 +147,20 @@
 
             // JAM KELUAR
             $jamKeluarKemarin = \Carbon\Carbon::parse($absenKemarin->jam_keluar);
-            if ($jamKeluarKemarin->format('H:i') === '16:00') {
+            $jamBatasKemarin = $jamKeluarKemarin->copy()->setTime(16,0,0);
+            if ($jamKeluarKemarin->lte($jamBatasKemarin)) {
                 $ketKeluarK = 'Selesai';
                 $warnaKeluarK = 'text-green-500';
-            } elseif ($jamKeluarKemarin->greaterThan(\Carbon\Carbon::parse('16:00'))) {
-                $selisih = $jamKeluarKemarin->diffInMinutes(\Carbon\Carbon::parse('16:00'));
-                $ketKeluarK = 'Lembur ' . $selisih . ' menit';
-                $warnaKeluarK = 'text-yellow-500';
             } else {
-                $ketKeluarK = '-';
-                $warnaKeluarK = 'text-gray-500';
+                $selisihMenit = $jamKeluarKemarin->diffInMinutes($jamBatasKemarin);
+                $lemburJamK = floor($selisihMenit / 60);
+                if ($lemburJamK >= 1) {
+                    $ketKeluarK = 'Lembur ' . $lemburJamK . ' jam';
+                    $warnaKeluarK = 'text-yellow-500';
+                } else {
+                    $ketKeluarK = 'Selesai';
+                    $warnaKeluarK = 'text-green-500';
+                }
             }
         @endphp
 
@@ -242,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const kantorLon = 110.743645;
 
         // 📏 Radius dalam kilometer (0.1 = 100 meter)
-        const radius = 0.1;
+        const radius = 10;
 
         const jarak = hitungJarak(userLat, userLon, kantorLat, kantorLon);
         console.log('Jarak ke kantor:', jarak, 'km');
